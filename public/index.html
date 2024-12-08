@@ -4,7 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>遊戲大廳</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 外部樣式表可以移至 style.css */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    #lobby {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    #controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #chatContainer {
+      height: 300px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+
+    #chatMessages {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #messageInputContainer {
+      display: flex;
+      gap: 10px;
+    }
+
+    #messageInput {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="client.js"></script>
 </head>
 <body>
   <div id="lobby">
@@ -16,12 +87,14 @@
     </div>
     <div id="chat">
       <h2>公頻聊天</h2>
-      <div id="chatMessages"></div>
-      <input id="chatInput" type="text" placeholder="輸入消息...">
-      <button id="sendMessage">送出</button>
+      <div id="chatContainer">
+        <div id="chatMessages"></div>
+      </div>
+      <div id="messageInputContainer">
+        <input id="messageInput" type="text" placeholder="輸入消息">
+        <button id="sendButton">發送</button>
+      </div>
     </div>
   </div>
-    <script defer src="/socket.io/socket.io.js"></script>
-  <script defer src="client.js"></script>
 </body>
 </html>
