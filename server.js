@@ -4,54 +4,58 @@ const { Server } = require("socket.io");
 
 // 創建 Express 應用程式
 const app = express();
-const server = http.createServer(app); // 創建 HTTP 伺服器
-const io = new Server(server); // 將 Socket.io 附加到伺服器
+const server = http.createServer(app);
+const io = new Server(server);
 
-const rooms = {}; // 房間列表
+const rooms = {}; // 儲存房間的資料
 
 // 廣播更新房間列表
 function broadcastRoomList() {
   io.emit("roomListUpdate", Object.values(rooms));
 }
 
+// 當用戶連接到伺服器時
 io.on("connection", (socket) => {
   console.log("用戶已連接:", socket.id);
 
-  // 聊天功能
+  // 公共聊天功能
   socket.on("publicChat", ({ playerId, message }) => {
     const timestamp = new Date().toLocaleTimeString();
     io.emit("publicMessage", { sender: playerId, message, timestamp });
   });
 
-  // 創建房間
-  socket.on("createRoom", ({ playerId, inviteOnly, spectatorsAllowed }, callback) => {
-    const roomId = `room-${Math.random().toString(36).substr(2, 8)}`;
-    rooms[roomId] = {
-      roomId,
-      host: playerId,
-      inviteOnly,
-      spectatorsAllowed,
-      players: [playerId],
-    };
-    socket.join(roomId);
-    console.log(`${playerId} 創建了房間 ${roomId}`);
-    broadcastRoomList();
-    callback({ success: true, roomId });
-  });
+socket.on("createRoom", ({ roomName, playerId, inviteOnly, spectatorsAllowed }, callback) => {
+  const roomId = `room-${Math.random().toString(36).substr(2, 8)}`;
+  const newRoom = {
+    id: roomId,
+    name: roomName || "未命名房間",
+    host: playerId,
+    inviteOnly: !!inviteOnly,
+    spectatorsAllowed: !!spectatorsAllowed,
+    members: [playerId],
+  };
 
+  rooms[roomId] = newRoom; // 將房間加入到全局房間列表
+  socket.join(roomId); // 將創建者加入該房間
+  console.log(`${playerId} 創建了房間: ${roomId}`);
+  broadcastRoomList(); // 廣播最新的房間列表
+  callback({ success: true, roomId });
+});
+  
   // 加入房間
   socket.on("joinRoom", ({ roomId, playerId }, callback) => {
     const room = rooms[roomId];
     if (!room) return callback({ success: false, message: "房間不存在" });
 
-    if (room.inviteOnly && room.players.length >= 2) {
+    if (room.inviteOnly && room.members.length >= 2) {
       return callback({ success: false, message: "該房間僅限邀請玩家加入" });
     }
 
-    room.players.push(playerId);
+    room.members.push(playerId); // 添加玩家到房間成員列表
     socket.join(roomId);
-    console.log(`${playerId} 加入了房間 ${roomId}`);
+    console.log(`${playerId} 加入了房間: ${roomId}`);
     callback({ success: true });
+    broadcastRoomList(); // 更新房間列表
   });
 
   // 觀戰房間
@@ -64,91 +68,38 @@ io.on("connection", (socket) => {
     }
 
     socket.join(roomId);
-    console.log(`${socket.id} 開始觀戰房間 ${roomId}`);
+    console.log(`${socket.id} 開始觀戰房間: ${roomId}`);
     callback({ success: true });
   });
 
-  // 用戶斷開連接
+  // 用戶發送消息
+  socket.on("message", (data) => {
+    console.log(`收到消息: ${data}`);
+    io.emit("message", data); // 廣播給所有連線用戶
+  });
+
+  // 用戶斷線
   socket.on("disconnect", () => {
     console.log("用戶已斷開:", socket.id);
+
+    // 從所有房間中移除該用戶
+    for (const roomId in rooms) {
+      const room = rooms[roomId];
+      room.members = room.members.filter((member) => member !== socket.id);
+
+      // 如果房間空了，刪除房間
+      if (room.members.length === 0) {
+        delete rooms[roomId];
+        console.log(`房間已刪除: ${roomId}`);
+      }
+    }
+
+    broadcastRoomList(); // 更新房間列表
   });
 });
 
 // 提供靜態文件 (前端)
 app.use(express.static("public"));
-
-// 當有用戶連線時
-io.on("connection", (socket) => {
-  console.log("用戶已連線");
-
-  // 當用戶發送消息時
-  socket.on("message", (data) => {5
-    console.log(`收到消息: ${data}`);
-    // 廣播消息給所有用戶
-    io.emit("message", data);
-  });
-
-  // 用戶斷線時
-  socket.on("disconnect", () => {
-    console.log("用戶已斷開連線");
-  });
-});
-
-// 啟動伺服器
-server.listen(3000, () => {
-  console.log("伺服器運行於 http://localhost:3000");
-});
-
-
-  // 用戶創建房間
-  socket.on("createRoom", (roomData) => {
-    const roomId = `room-${Math.random().toString(36).substr(2, 6)}`; // 唯一房間ID
-    const newRoom = {
-      id: roomId,
-      name: roomData.roomName || "未命名房間",
-      host: roomData.host || socket.id,
-      allowSpectators: roomData.allowSpectators || true,
-      inviteOnly: roomData.inviteOnly || false,
-      members: [socket.id], // 成員列表，加入創建者
-    };
-
-    rooms[roomId] = newRoom; // 儲存房間資料
-    socket.join(roomId); // 加入房間
-    console.log(`房間已創建：${roomId}`, newRoom);
-
-    // 回應創建者並廣播更新房間列表
-    socket.emit("roomCreated", newRoom);
-    broadcastRoomList();
-  });
-
-  // 用戶加入房間
-  socket.on("joinRoom", ({ roomId, playerId }) => {
-    const room = rooms[roomId];
-    if (room) {
-      room.members.push(playerId);
-      socket.join(roomId);
-      console.log(`${playerId} 加入房間：${roomId}`);
-      socket.emit("roomJoined", room);
-      broadcastRoomList();
-    } else {
-      socket.emit("error", { message: "房間不存在！" });
-    }
-
-
- 
-
-    // 從房間中移除該用戶
-    for (const roomId in rooms) {
-      const room = rooms[roomId];
-      room.members = room.members.filter((member) => member !== socket.id);
-      if (room.members.length === 0) {
-        delete rooms[roomId]; // 如果房間空了，刪除
-      }
-    }
-
-    broadcastRoomList(); // 更新房間列表
-
-});
 
 // 啟動伺服器
 const PORT = process.env.PORT || 3000;
