@@ -85,12 +85,80 @@
 <body>
   <div id="lobby">
     <h1>遊戲大廳</h1>
+<div id="player-id-section">
+    <h3>當前玩家ID: <span id="player-id">尚未設定</span></h3>
+    <input type="text" id="player-id-input" placeholder="請輸入玩家ID">
+    <button id="set-player-id">設置玩家ID</button>
+  </div>
 
-    <!-- 功能按鈕 -->
-    <div id="controls">
-      <button id="createRoom">創建房間</button>
-      <!-- 房間創建彈出區 -->
-<div id="createRoomModal" style="display: none;">
+  <div id="room-section" style="display:none;">
+    <h3>當前房間ID: <span id="room-id">尚未加入任何房間</span></h3>
+    <button id="join-room">加入房間</button>
+    <button id="create-room">創建房間</button>
+  </div>
+      <script>
+    const socket = io();
+    let playerId = "";  // 用於存儲玩家ID
+    let roomId = "";    // 用於存儲當前房間ID
+
+    // 設置玩家ID的處理邏輯
+    document.getElementById('set-player-id').addEventListener('click', () => {
+      const inputId = document.getElementById('player-id-input').value.trim();
+      if (inputId) {
+        playerId = inputId;
+        document.getElementById('player-id').innerText = playerId;
+        document.getElementById('player-id-input').disabled = true;
+        document.getElementById('set-player-id').disabled = true;
+        document.getElementById('room-section').style.display = 'block';
+        console.log('玩家ID設置為:', playerId);
+      } else {
+        alert("請輸入有效的玩家ID！");
+      }
+    });
+
+    // 創建房間
+    document.getElementById('create-room').addEventListener('click', () => {
+      if (!playerId) {
+        alert("請先設置玩家ID！");
+        return;
+      }
+
+      const roomName = prompt("請輸入房間名稱");
+      if (roomName) {
+        socket.emit('createRoom', { roomName, playerId, inviteOnly: false, spectatorsAllowed: true }, (response) => {
+          if (response.success) {
+            roomId = response.roomId;
+            document.getElementById('room-id').innerText = roomId;
+            alert(`房間創建成功，房間ID: ${roomId}`);
+          } else {
+            alert("創建房間失敗：" + response.message);
+          }
+        });
+      }
+    });
+
+    // 加入房間
+    document.getElementById('join-room').addEventListener('click', () => {
+      if (!playerId) {
+        alert("請先設置玩家ID！");
+        return;
+      }
+
+      const inputRoomId = prompt("請輸入房間ID");
+      if (inputRoomId) {
+        socket.emit('joinRoom', { roomId: inputRoomId, playerId }, (response) => {
+          if (response.success) {
+            roomId = inputRoomId;
+            document.getElementById('room-id').innerText = roomId;
+            alert(`成功加入房間 ${roomId}`);
+          } else {
+            alert("加入房間失敗：" + response.message);
+          }
+        });
+      }
+    });
+
+  </script>
   <h3>創建房間</h3>
   <div id="roomList">
   <h2>房間列表</h2>
@@ -111,10 +179,6 @@
   <br>
   <button id="confirmCreateRoom">確認創建</button>
   <button id="cancelCreateRoom">取消</button>
-</div>
-      <button id="joinRoom">加入房間</button>
-      <button id="spectateRoom">觀戰</button>
-    </div>
 
     <!-- 聊天區 -->
     <div id="chat">
