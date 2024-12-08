@@ -103,3 +103,20 @@ socket.on("roomCreated", (room) => {
   currentRoom = room; // 設定目前所在的房間
   alert(`房間「${room.name}」創建成功！`);
 });
+// 接收伺服器廣播的房間列表更新
+socket.on("roomListUpdate", (roomList) => {
+  console.log("房間列表更新：", roomList);
+  // TODO: 更新房間列表的顯示，例如渲染到畫面中
+});
+socket.on("roomListUpdate", (roomList) => {
+  console.log("接收到的房間列表：", roomList); // 確認接收到的資料
+  const roomListContainer = document.getElementById("roomList");
+  if (!roomListContainer) return;
+
+  roomListContainer.innerHTML = ""; // 清空舊房間列表
+  roomList.forEach((room) => {
+    const roomElement = document.createElement("div");
+    roomElement.textContent = `房間名稱: ${room.name} | 房主: ${room.host}`;
+    roomListContainer.appendChild(roomElement);
+  });
+});
