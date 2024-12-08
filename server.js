@@ -7,6 +7,73 @@ const app = express();
 const server = http.createServer(app); // 創建 HTTP 伺服器
 const io = new Server(server); // 將 Socket.io 附加到伺服器
 
+const rooms = {}; // 房間列表
+
+// 廣播更新房間列表
+function broadcastRoomList() {
+  io.emit("roomListUpdate", Object.values(rooms));
+}
+
+io.on("connection", (socket) => {
+  console.log("用戶已連接:", socket.id);
+
+  // 聊天功能
+  socket.on("publicChat", ({ playerId, message }) => {
+    const timestamp = new Date().toLocaleTimeString();
+    io.emit("publicMessage", { sender: playerId, message, timestamp });
+  });
+
+  // 創建房間
+  socket.on("createRoom", ({ playerId, inviteOnly, spectatorsAllowed }, callback) => {
+    const roomId = `room-${Math.random().toString(36).substr(2, 8)}`;
+    rooms[roomId] = {
+      roomId,
+      host: playerId,
+      inviteOnly,
+      spectatorsAllowed,
+      players: [playerId],
+    };
+    socket.join(roomId);
+    console.log(`${playerId} 創建了房間 ${roomId}`);
+    broadcastRoomList();
+    callback({ success: true, roomId });
+  });
+
+  // 加入房間
+  socket.on("joinRoom", ({ roomId, playerId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ success: false, message: "房間不存在" });
+
+    if (room.inviteOnly && room.players.length >= 2) {
+      return callback({ success: false, message: "該房間僅限邀請玩家加入" });
+    }
+
+    room.players.push(playerId);
+    socket.join(roomId);
+    console.log(`${playerId} 加入了房間 ${roomId}`);
+    callback({ success: true });
+  });
+
+  // 觀戰房間
+  socket.on("spectateRoom", ({ roomId }, callback) => {
+    const room = rooms[roomId];
+    if (!room) return callback({ success: false, message: "房間不存在" });
+
+    if (!room.spectatorsAllowed) {
+      return callback({ success: false, message: "該房間不允許觀戰" });
+    }
+
+    socket.join(roomId);
+    console.log(`${socket.id} 開始觀戰房間 ${roomId}`);
+    callback({ success: true });
+  });
+
+  // 用戶斷開連接
+  socket.on("disconnect", () => {
+    console.log("用戶已斷開:", socket.id);
+  });
+});
+
 // 提供靜態文件 (前端)
 app.use(express.static("public"));
 
@@ -15,7 +82,7 @@ io.on("connection", (socket) => {
   console.log("用戶已連線");
 
   // 當用戶發送消息時
-  socket.on("message", (data) => {
+  socket.on("message", (data) => {5
     console.log(`收到消息: ${data}`);
     // 廣播消息給所有用戶
     io.emit("message", data);
@@ -32,12 +99,6 @@ server.listen(3000, () => {
   console.log("伺服器運行於 http://localhost:3000");
 });
 
-
-const rooms = {}; // 儲存房間資料
-
-// 當用戶連接時
-io.on("connection", (socket) => {
-  console.log("有新用戶連接：", socket.id);
 
   // 用戶創建房間
   socket.on("createRoom", (roomData) => {
@@ -72,16 +133,9 @@ io.on("connection", (socket) => {
     } else {
       socket.emit("error", { message: "房間不存在！" });
     }
-  });
 
-  // 廣播房間列表更新
-  function broadcastRoomList() {
-    io.emit("roomListUpdate", Object.values(rooms)); // 傳送房間列表
-  }
 
-  // 用戶斷開連接
-  socket.on("disconnect", () => {
-    console.log("用戶斷開連接：", socket.id);
+ 
 
     // 從房間中移除該用戶
     for (const roomId in rooms) {
@@ -93,7 +147,7 @@ io.on("connection", (socket) => {
     }
 
     broadcastRoomList(); // 更新房間列表
-  });
+
 });
 
 // 啟動伺服器
