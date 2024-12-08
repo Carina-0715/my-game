@@ -13,20 +13,20 @@ function promptForPlayerId() {
     if (!playerId) alert("玩家ID 是必要的！");
   }
 }
-  
+
+// 確保在一開始就設置玩家ID
+window.onload = () => {
+  promptForPlayerId(); // 提示輸入玩家ID
+};
+
 // 發送聊天消息
 sendButton.addEventListener("click", () => {
-  if (!playerId) {
-    promptForPlayerId(); // 確保玩家ID已經設置
-  }
-
   const message = messageInput.value.trim();
   if (message) {
     socket.emit("publicChat", { playerId, message });
     messageInput.value = "";
   }
 });
-
 
 // 接收伺服器廣播的消息
 socket.on("publicMessage", (message) => {
