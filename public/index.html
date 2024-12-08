@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>遊戲大廳</title>
   <style>
-    /* 外部樣式表可以移至 style.css */
+    /* 樣式部分 */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -37,14 +37,19 @@
       padding: 10px 20px;
       border: none;
       border-radius: 5px;
-      background-color: #007BFF;
+      background-color: #0056b3;
       color: white;
       font-size: 16px;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #007BFF;
+    }
+
+    #playerIdContainer {
+      margin-bottom: 20px;
+      text-align: center;
     }
 
     #chatContainer {
@@ -80,11 +85,40 @@
 <body>
   <div id="lobby">
     <h1>遊戲大廳</h1>
+
+    <!-- 玩家 ID 輸入區 -->
+    <div id="playerIdContainer">
+      <input id="playerIdInput" type="text" placeholder="輸入玩家 ID">
+      <button id="setPlayerIdButton">設定 ID</button>
+    </div>
+
+    <!-- 功能按鈕 -->
     <div id="controls">
       <button id="createRoom">創建房間</button>
+      <!-- 房間創建彈出區 -->
+<div id="createRoomModal" style="display: none;">
+  <h3>創建房間</h3>
+  <label>
+    房間名稱：
+    <input id="roomNameInput" type="text" placeholder="輸入房間名稱">
+  </label>
+  <br>
+  <label>
+    <input id="allowSpectators" type="checkbox"> 允許觀戰
+  </label>
+  <br>
+  <label>
+    <input id="inviteOnly" type="checkbox"> 僅限邀請
+  </label>
+  <br>
+  <button id="confirmCreateRoom">確認創建</button>
+  <button id="cancelCreateRoom">取消</button>
+</div>
       <button id="joinRoom">加入房間</button>
       <button id="spectateRoom">觀戰</button>
     </div>
+
+    <!-- 聊天區 -->
     <div id="chat">
       <h2>公頻聊天</h2>
       <div id="chatContainer">
