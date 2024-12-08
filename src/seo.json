@@ -1,7 +1,8 @@
 {
-  "glitch-help-instructions": "For a custom domain, change the 'url' parameter from 'glitch-default' to your domain _without_ a traling slash, like 'https://www.example.com'",
-  "title": "Hello Node!",
-  "description": "A simple Node site built with Glitch. Remix it to get your own.",
-  "url": "glitch-default",
-  "image": "https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2Fhello-node-social.png?v=1618161394375"
+  "title": "多人遊戲大廳",
+  "description": "一個支援房間創建、加入和聊天功能的多人遊戲大廳。",
+  "url": "https://your-glitch-project-name.glitch.me",
+  "image": "https://your-glitch-project-name.glitch.me/thumbnail.png",
+  "keywords": ["多人遊戲", "大廳", "socket.io", "遊戲房間"],
+  "author": "YourName"
 }

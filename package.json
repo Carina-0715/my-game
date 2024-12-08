@@ -1,27 +1,24 @@
 {
-  "name": "glitch-hello-node",
-  "version": "0.1.0",
-  "description": "A simple Node app built on fastify, instantly up and running. Built to be remixed on Glitch.com.",
+  "name": "multiplayer-game-lobby",
+  "version": "1.0.0",
+  "description": "一個簡單的多人遊戲大廳，包括房間管理和聊天功能。",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
+  "keywords": [
+    "game",
+    "multiplayer",
+    "socket.io",
+    "lobby"
+  ],
+  "author": "YourName",
+  "license": "MIT",
   "dependencies": {
-    "fastify": "^4.21.0",
-    "handlebars": "^4.7.8",
-    "@fastify/formbody": "^7.4.0",
-    "@fastify/static": "^6.10.2",
-    "@fastify/view": "^8.0.0"
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   },
   "engines": {
-    "node": "14.x"
-  },
-  "repository": {
-    "url": "https://glitch.com/edit/#!/glitch-hello-node"
-  },
-  "license": "MIT",
-  "keywords": [
-    "node",
-    "glitch"
-  ]
+    "node": ">=14.0.0"
+  }
 }
