@@ -3,115 +3,55 @@ const socket = io();
 
 // 儲存玩家ID
 let playerID = '';
-let roomID = ''; // 添加房間ID的全域變數
 
 // 確認玩家ID
-document.getElementById('confirm-player-id').addEventListener('click', () => {
-  playerID = document.getElementById('input-player-id').value.trim();
+document.getElementById('confirmPlayerID').addEventListener('click', () => {
+  playerID = document.getElementById('playerID').value;
   if (playerID) {
     socket.emit('confirmPlayerID', { playerID });
-    document.getElementById('player-id-display').textContent = playerID;
+    document.getElementById('player-id').textContent = playerID;
+    document.getElementById('createRoom').disabled = false;
+    document.getElementById('joinRoom').disabled = false;
   } else {
     alert('請輸入玩家ID');
   }
-
-  // 發送玩家ID到伺服器，進行唯一性檢查
-  socket.emit('checkPlayerID', playerID);
 });
-
-// 接收伺服器檢查結果
-socket.on('playerIDChecked', (data) => {
-  if (data.success) {
-    alert(`歡迎，玩家 ${data.playerID}！`);
-    showRoomOptions(); // 進入房間選項界面
-  } else {
-    alert('玩家ID已存在，請重新輸入！');
-  }
-});
-
-function showRoomOptions() {
-  // 隱藏玩家ID輸入界面
-  document.getElementById('lobby').style.display = 'none';
-
-  // 顯示房間設置界面
-  document.getElementById('room-settings').style.display = 'block';
-
-  // 顯示房間列表（公開房間）
-  document.getElementById('room-list').style.display = 'block';
-}
 
 // 創建房間
-document.getElementById('create-room-btn').addEventListener('click', () => {
-  const roomMode = document.getElementById('room-mode').value;
-
-  // 發送創建房間請求
-  socket.emit('createRoom', { playerID, roomMode });
-});
-
-// 接收房間創建成功訊息
-socket.on('roomCreated', (data) => {
-  roomID = data.roomID; // 儲存房間ID
-  alert(`房間創建成功！房間ID: ${data.roomID}`);
-  if (data.roomMode === 'invite') {
-    const inviteLink = `http://example.com/join/${data.roomID}`;
-    alert(`邀請連結已生成：${inviteLink}`);
-  }
+document.getElementById('createRoom').addEventListener('click', () => {
+  const roomID = prompt('輸入房間ID:');
+  socket.emit('createRoom', { playerID, roomID });
 });
 
 // 加入房間
-document.getElementById('join-room-btn').addEventListener('click', () => {
-  const inputRoomID = document.getElementById('input-room-id').value.trim();
-
-  if (!inputRoomID) {
-    alert('房間ID不能為空！');
-    return;
-  }
-
-  // 發送加入房間請求
-  socket.emit('joinRoom', { playerID, roomID: inputRoomID });
+document.getElementById('joinRoom').addEventListener('click', () => {
+  const roomID = prompt('輸入房間ID:');
+  socket.emit('joinRoom', { playerID, roomID });
 });
 
-// 接收伺服器回應
-socket.on('roomJoinResponse', (data) => {
+// 接收房間創建回應
+socket.on('roomCreated', (data) => {
   if (data.success) {
-    roomID = data.roomID; // 更新當前房間ID
-    alert(`加入房間成功！房間ID: ${data.roomID}`);
-  } else {
-    alert(`加入房間失敗：${data.message}`);
+    alert(`房間創建成功！房間ID: ${data.roomID}`);
+    
+    // 隱藏遊戲大廳標題
+    document.getElementById('lobby-title').style.display = 'none';
+   // 隱藏九九乘法表遊戲標題
+    document.getElementById('game-board-title').style.display = 'none';
+    
+    startGame(data.roomID);
   }
 });
 
-// 更新觀戰設置
-document.getElementById('update-spectator-settings-btn').addEventListener('click', () => {
-  const allowSpectators = document.getElementById('allow-spectators').checked;
-
-  // 發送設置到伺服器
-  socket.emit('updateSpectatorSettings', { roomID, allowSpectators });
+// 玩家加入房間回應
+socket.on('playerJoined', (data) => {
+  alert(`玩家 ${data.playerID} 加入了房間`);
+  startGame(data.roomID);
 });
 
-// 更新房間列表
-socket.on('updateRoomList', (rooms) => {
-  const roomList = document.getElementById('room-list-container');
-  roomList.innerHTML = ''; // 清空列表
-  rooms.forEach((room) => {
-    const listItem = document.createElement('li');
-    listItem.textContent = `房間ID: ${room.id} | 人數: ${room.players}/4 | 狀態: ${room.status}`;
-    roomList.appendChild(listItem);
-  });
-});
-
-// 接收觀戰設置更新回應
-socket.on('spectatorSettingsUpdated', (data) => {
-  alert(`觀戰設置已更新：${data.allowSpectators ? '允許觀戰' : '禁止觀戰'}`);
-});
-
-// 初始化遊戲
-function initGame() {
-  generateMultiplicationTable();
-}
 
 // 開始遊戲
-function startGame() {
+function startGame(roomID) {
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   document.getElementById('player-hand').style.display = 'block';
