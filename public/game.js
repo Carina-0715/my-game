@@ -75,35 +75,25 @@ let playerID = '';
 document.getElementById('confirmPlayerID').addEventListener('click', () => {
   playerID = document.getElementById('playerID').value;
   if (playerID) {
-    socket.emit('confirmPlayerID', { playerID });
-    document.getElementById('player-id').textContent = playerID;
-    document.getElementById('createRoom').disabled = false;
-    document.getElementById('joinRoom').disabled = false;
+    // 發送玩家ID到伺服器，進行唯一性檢查
+    socket.emit('checkPlayerID', playerID);
   } else {
     alert('請輸入玩家ID');
   }
-
-  // 發送玩家ID到伺服器，進行唯一性檢查
-  socket.emit('checkPlayerID', playerID);
 });
 
 // 接收伺服器檢查結果
-socket.on('playerIDChecked', (data) => {
+socket.on('checkPlayerIDResult', (data) => {
   if (data.success) {
-    alert(`歡迎，玩家 ${data.playerID}！`);
-    // 進入下一步，顯示房間選項
+    document.getElementById('player-id').textContent = playerID;
+    document.getElementById('createRoom').disabled = false;
+    document.getElementById('joinRoom').disabled = false;
+    alert(`玩家ID ${playerID} 可用！`);
   } else {
     alert('玩家ID已存在，請重新輸入！');
   }
 });
 
-// 創建房間
-document.getElementById('createRoom').addEventListener('click', () => {
-  const roomID = prompt('輸入房間ID:');
-  if (roomID) {
-    socket.emit('createRoom', { playerID, roomID });
-  }
-});
 
 // 加入房間
 document.getElementById('joinRoom').addEventListener('click', () => {
@@ -113,21 +103,7 @@ document.getElementById('joinRoom').addEventListener('click', () => {
   }
 });
 
-// 接收房間創建回應
-socket.on('roomCreated', (data) => {
-  if (data.success) {
-    alert(`房間創建成功！房間ID: ${data.roomID}`);
 
-    // 更新房間列表
-    const newRoom = {
-      id: data.roomID,
-      name: `房間 ${data.roomID}`,
-      status: 'available' // 新房間設為 '空閒'
-    };
-    rooms.push(newRoom); // 把新創建的房間添加到房間數組中
-    renderRooms(); // 重新渲染房間列表
-  }
-});
 
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
