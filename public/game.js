@@ -1,26 +1,28 @@
 // 連接 Socket.io 伺服器
 const socket = io();
-    const rooms = [
-      { id: 1, name: '房間 1', status: 'available' },
-      { id: 2, name: '房間 2', status: 'full' },
-      { id: 3, name: '房間 3', status: 'waiting' },
-      { id: 4, name: '房間 4', status: 'available' },
-      { id: 5, name: '房間 5', status: 'full' }
-    ];
+const rooms = [];
 
-    // 渲染房間列表
-    const roomListElement = document.getElementById('roomList');
-    rooms.forEach(room => {
-      const roomTile = document.createElement('div');
-      roomTile.classList.add('room-tile'); // 不設定顏色，等待動態添加
-      roomTile.innerHTML = `
-        <div class="room-name">${room.name}</div>
-        <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
-      `;
-      roomTile.classList.add(room.status);  // 根據狀態動態添加顏色樣式
-      roomListElement.appendChild(roomTile);
+// 渲染房間列表
+const roomListElement = document.getElementById('roomList');
+function renderRooms() {
+  roomListElement.innerHTML = ''; // 清空房間列表
+  rooms.forEach(room => {
+    const roomTile = document.createElement('div');
+    roomTile.classList.add('room-tile'); // 不設定顏色，等待動態添加
+    roomTile.innerHTML = `
+      <div class="room-name">${room.name}</div>
+      <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
+    `;
+    roomTile.classList.add(room.status);  // 根據狀態動態添加顏色樣式
+    
+    // 添加點擊事件，點擊房間後自動加入並進入遊戲畫面
+    roomTile.addEventListener('click', () => {
+      socket.emit('joinRoom', { playerID, roomID: room.id });
     });
 
+    roomListElement.appendChild(roomTile);
+  });
+}
 // 儲存玩家ID
 let playerID = '';
 
@@ -36,7 +38,7 @@ document.getElementById('confirmPlayerID').addEventListener('click', () => {
     alert('請輸入玩家ID');
   }
 
-// 發送玩家ID到伺服器，進行唯一性檢查
+  // 發送玩家ID到伺服器，進行唯一性檢查
   socket.emit('checkPlayerID', playerID);
 });
 
@@ -45,45 +47,49 @@ socket.on('playerIDChecked', (data) => {
   if (data.success) {
     alert(`歡迎，玩家 ${data.playerID}！`);
     // 進入下一步，顯示房間選項
-
   } else {
     alert('玩家ID已存在，請重新輸入！');
   }
 });
 
-
 // 創建房間
 document.getElementById('createRoom').addEventListener('click', () => {
   const roomID = prompt('輸入房間ID:');
-  socket.emit('createRoom', { playerID, roomID });
+  if (roomID) {
+    socket.emit('createRoom', { playerID, roomID });
+  }
 });
 
 // 加入房間
 document.getElementById('joinRoom').addEventListener('click', () => {
   const roomID = prompt('輸入房間ID:');
-  socket.emit('joinRoom', { playerID, roomID });
+  if (roomID) {
+    socket.emit('joinRoom', { playerID, roomID });
+  }
 });
 
 // 接收房間創建回應
 socket.on('roomCreated', (data) => {
   if (data.success) {
     alert(`房間創建成功！房間ID: ${data.roomID}`);
-    
-    // 隱藏遊戲大廳標題
-    document.getElementById('lobby-title').style.display = 'none';
-   // 隱藏九九乘法表遊戲標題
-    document.getElementById('game-board-title').style.display = 'none';
-    
-    startGame(data.roomID);
+
+    // 更新房間列表
+    const newRoom = {
+      id: data.roomID,
+      name: `房間 ${data.roomID}`,
+      status: 'available' // 新房間設為 '空閒'
+    };
+    rooms.push(newRoom); // 把新創建的房間添加到房間數組中
+    renderRooms(); // 重新渲染房間列表
   }
 });
 
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);
+  // 進入遊戲畫面
   startGame(data.roomID);
 });
-
 
 // 開始遊戲
 function startGame(roomID) {
