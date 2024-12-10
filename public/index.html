@@ -202,22 +202,58 @@
   right: 10px;
   width: 500px;
   height: 400px;
-  z-index: 1000; /* 保證它不被其他元素擋住 */
+  z-index: 1000;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow-y: auto;
 }
+
+#chat-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}
+
+.chat-tab.active {
+  background-color: #e0f7fa;
+  font-weight: bold;
+}
+
 .chat {
+  display: none;
   padding: 10px;
   margin: 5px;
   border-radius: 5px;
   overflow-wrap: break-word;
 }
+
 .blue { background: #e0f7fa; }
 .pink { background: #fce4ec; }
 .green { background: #e8f5e9; }
 .orange { background: #fff3e0; }
+
+#chat-content {
+  height: 250px;
+  overflow-y: auto;
+}
+
+#chat-input {
+  width: 80%;
+  margin: 10px;
+}
+
+#chat-send {
+  width: 15%;
+}
   </style>
 </head>
 <body>
@@ -301,11 +337,18 @@
   <button onclick="selectIcon('🌶️')">🌶️</button>
 </div>
 <div id="chat-box">
-  <div id="public-chat" class="chat blue">公頻對話</div>
-  <div id="private-chat" class="chat pink">私密對話</div>
-  <div id="game-chat" class="chat green">對戰對話</div>
-  <div id="spectator-chat" class="chat orange">觀戰對話</div>
-  <div id="chat-content"></div> <!-- 聊天訊息顯示區 -->
+  <!-- 標籤選擇區 -->
+  <div id="chat-tabs">
+    <button class="chat-tab" data-chat-type="public">公頻對話</button>
+    <button class="chat-tab" data-chat-type="private">私密對話</button>
+    <button class="chat-tab" data-chat-type="game">對戰對話</button>
+    <button class="chat-tab" data-chat-type="spectator">觀戰對話</button>
+  </div>
+  
+  <!-- 顯示不同類型的聊天內容 -->
+  <div id="chat-content"></div>
+
+  <!-- 訊息輸入區 -->
   <input id="chat-input" type="text" placeholder="輸入訊息..." style="width: 80%; margin: 10px;">
   <button id="chat-send" style="width: 15%;">發送</button>
 </div>
