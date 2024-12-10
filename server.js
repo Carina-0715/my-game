@@ -4,8 +4,15 @@ const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
-
+const io = socketIo(server); // 初始化 socket.io
+// 當客戶端連接時
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 let players = {};  // 儲存已註冊的玩家ID
 const rooms = [
   { id: 'zz845d', name: '房間 zz845d', status: 'available', mode: 'someMode', spectatorSetting: true },

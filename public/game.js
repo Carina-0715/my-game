@@ -1,5 +1,6 @@
-// 連接 Socket.io 伺服器
-const socket = io();
+import { io } from 'socket.io-client';
+const socket = io();  // 用來連接到後端的 socket.io 服務器
+
 // 儲存房間資料
 const rooms = [];
 
@@ -52,18 +53,28 @@ console.log('After rendering rooms:', rooms);
 
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
+let previousRooms = [];
+
 function renderRooms(rooms) {
   const roomListContainer = document.getElementById('room-list');
-  
-  // 確保 rooms 資料有效
-  if (!Array.isArray(rooms) || rooms.length === 0) {
+
+  console.log('Before rendering rooms:', rooms);
+
+  // 如果房間資料為空，顯示 "No rooms available"
+  if (!rooms || rooms.length === 0) {
     console.log('No rooms available');
-    roomListContainer.innerHTML = '<p>No rooms available</p>';  // 顯示提示訊息
+    roomListContainer.innerHTML = '<p>No rooms available</p>';
     return;
   }
 
-  console.log('Rendering rooms:', rooms);  // 打印收到的房間資料
-  roomListContainer.innerHTML = '';  // 清空房間列表
+  // 比較當前資料和上一輪渲染的資料
+  if (JSON.stringify(rooms) === JSON.stringify(previousRooms)) {
+    console.log('Rooms data has not changed, skipping render.');
+    return;  // 如果資料未改變，就跳過渲染
+  }
+
+  // 清空房間列表
+  roomListContainer.innerHTML = '';
 
   rooms.forEach(room => {
     const roomElement = document.createElement('div');
@@ -75,9 +86,12 @@ function renderRooms(rooms) {
       <div class="spectator">${room.spectatorSetting ? 'Spectators allowed' : 'No spectators'}</div>
     `;
     roomListContainer.appendChild(roomElement);
-    roomListContainer.innerHTML = '';  // 清空容器
-
   });
+
+  // 更新上一輪的房間資料
+  previousRooms = rooms;
+
+  console.log('After rendering rooms:', rooms);
 }
 
 
