@@ -15,12 +15,7 @@ body {
   height: 100vh; /* 讓body高度滿版 */
   margin: 0;
 }
-#game-container {
-  display: flex;
-  flex-direction: column; /* 讓 game-board 和 player-container 在垂直方向排列 */
-  align-items: center;
-  justify-content: flex-start;
-}
+
 #game-board {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -47,14 +42,15 @@ body {
 #player-info {
   margin-bottom: 1px; /* 控制玩家資訊區塊與手牌之間的距離 */
   justify-content: right;
-  margin-left: 500px; /* 玩家資訊往右移 */
+  margin-left: 150px; /* 玩家資訊往右移 */
 }
 
 #player-hand {
+  position: absolute; /* 使元素脫離正常文檔流 */
   margin: 1px;
   text-align: center;
-  margin-top: 350px; /* 手牌往下移 */
-  margin-right: 200px; /* 玩家資訊往右移 */
+  margin-top: 500px; /* 手牌往下移 */
+  margin-left: 500px; /* 玩家資訊往左移 */
 }
 
 #hand-cards {

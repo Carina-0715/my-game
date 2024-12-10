@@ -98,23 +98,9 @@ function generateMultiplicationTable() {
       }
     }
   }
-  // 打亂數字順序，隨機排列
-  shuffleArray(numbers);
 
-  // 將隨機打亂的數字放入已經存在的格子中
-  for (let i = 0; i < cells.length; i++) {
-    cells[i].textContent = numbers[i]; // 設置每個格子的數字
-  }
   // 隨機選擇兩個格子來放置玩家和對手
   placePlayersOnBoard();
-}
-
-// 洗牌函數，用來隨機打亂陣列
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // 交換元素
-  }
 }
 
 // 隨機放置玩家與對手
