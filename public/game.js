@@ -128,6 +128,8 @@ document.getElementById('joinRoom').addEventListener('click', () => {
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);
+  currentRoomId = data.roomID; // 更新當前房間 ID
+  console.log("已加入房間，ID:", currentRoomId);
   // 進入遊戲畫面
   startGame(data.roomID);
 });
