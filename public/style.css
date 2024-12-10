@@ -1,3 +1,4 @@
+/* 遊戲板格 */
 #game-board {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
@@ -13,6 +14,7 @@
   background-color: #f9f9f9;
 }
 
+/* 玩家與對手樣式 */
 .player, .opponent {
   font-weight: bold;
   color: white;
@@ -20,6 +22,8 @@
   padding: 5px;
   border-radius: 50%;
 }
+
+/* 手牌 */
 #player-hand {
   margin: 20px;
   text-align: center;
@@ -38,6 +42,8 @@
   border-color: blue;
   font-weight: bold;
 }
+
+/* 移動方向按鈕 */
 #move-direction button {
   margin: 5px;
   padding: 10px 20px;
@@ -51,37 +57,8 @@
 #move-direction button:hover {
   background-color: #45a049;
 }
-.cell {
-  width: 50px;
-  height: 50px;
-  border: 1px solid #cccccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  position: relative;
-}
 
-.cell.player {
-  background-color: #a2d9ce;
-  border-radius: 50%;
-  animation: moveEffect 0.5s ease-in-out;
-}
-
-.cell.opponent {
-  background-color: #f5b041;
-  border-radius: 50%;
-  animation: moveEffect 0.5s ease-in-out;
-}
-
-@keyframes moveEffect {
-  from {
-    transform: scale(0.8);
-  }
-  to {
-    transform: scale(1);
-  }
-}
+/* 生命條 */
 .stamina-bar {
   width: 200px;
   height: 20px;
