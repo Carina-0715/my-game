@@ -24,6 +24,7 @@
       margin: 20px auto;
       width: 40%;
       text-align: center;
+      justify-content: center;
     }
     #game-board div {
       border: 1px solid #cccccc;
@@ -104,30 +105,34 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      
     }
     #move-direction button:hover {
       background-color: #45a049;
     }
-    .cell {
-      width: 50px;
-      height: 50px;
-      border: 1px solid #cccccc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 18px;
-      position: relative;
-    }
-    .cell.player {
-      background-color: #a2d9ce;
-      border-radius: 50%;
-      animation: moveEffect 0.5s ease-in-out;
-    }
-    .cell.opponent {
-      background-color: #f5b041;
-      border-radius: 50%;
-      animation: moveEffect 0.5s ease-in-out;
-    }
+.cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #cccccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  position: relative;
+}
+
+/* 玩家與對手的標記 */
+.cell.player {
+  background-color: #a2d9ce;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.cell.opponent {
+  background-color: #f5b041;
+  border-radius: 50%;
+  font-weight: bold;
+}
     @keyframes moveEffect {
       from {
         transform: scale(0.8);

@@ -54,20 +54,48 @@ function startGame(roomID) {
   socket.emit('startGame', { roomID });
 }
 
-// 生成九九乘法表
+// 生成九九乘法表格
 function generateMultiplicationTable() {
   const gameBoard = document.getElementById('game-board');
-  gameBoard.innerHTML = '';  // 清空現有內容
+  gameBoard.innerHTML = ''; // 清空之前的內容
 
   for (let i = 1; i <= 9; i++) {
     for (let j = 1; j <= 9; j++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
-      cell.innerHTML = i * j;
+      cell.textContent = i * j; // 顯示乘法表的數字
       gameBoard.appendChild(cell);
     }
   }
 }
+
+// 隨機選擇兩個位置放置玩家和對手
+function placePlayersOnBoard() {
+  const cells = document.querySelectorAll('.cell');
+  const randomPlayerIndex = Math.floor(Math.random() * cells.length);
+  const randomOpponentIndex = Math.floor(Math.random() * cells.length);
+
+  // 確保玩家和對手不會出現在同一格
+  while (randomOpponentIndex === randomPlayerIndex) {
+    randomOpponentIndex = Math.floor(Math.random() * cells.length);
+  }
+
+  // 顯示玩家和對手
+  const playerCell = cells[randomPlayerIndex];
+  const opponentCell = cells[randomOpponentIndex];
+
+  playerCell.classList.add('player'); // 標記玩家的格子
+  opponentCell.classList.add('opponent'); // 標記對手的格子
+}
+
+// 初始化遊戲
+function initGame() {
+  generateMultiplicationTable();
+  placePlayersOnBoard();
+}
+
+// 呼叫初始化遊戲
+initGame();
 
 // 顯示手牌
 function displayHand(cards) {
