@@ -7,7 +7,15 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 let players = {};  // 儲存已註冊的玩家ID
-const rooms = {};   // 儲存房間資料
+const rooms = [
+  { id: 'zz845d', name: '房間 zz845d', status: 'available', mode: 'someMode', spectatorSetting: true },
+  { id: 'fvza05', name: '房間 fvza05', status: 'available', mode: 'someMode', spectatorSetting: false }
+];
+
+// 打印房間資料以檢查
+console.log('Rooms to be sent:', rooms);
+
+
 
 // 伺服器靜態資源路徑設定
 app.use(express.static('public'));
