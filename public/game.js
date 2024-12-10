@@ -107,14 +107,14 @@ document.getElementById('joinRoom').addEventListener('click', () => {
   }
 });
 
-
-
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);
   // 進入遊戲畫面
   startGame(data.roomID);
 });
+
+
 
 // 開始遊戲
 function startGame(roomID) {

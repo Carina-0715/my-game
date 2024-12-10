@@ -68,11 +68,11 @@ io.on('connection', (socket) => {
     }
   });
 socket.on("joinRoom", (data) => {
-  const { roomId, playerId } = data;
-  if (rooms[roomId] && !rooms[roomId].players.includes(playerId)) {
-    rooms[roomId].players.push(playerId);
-    socket.join(roomId);
-    broadcastRoomState(roomId); // 同步房間狀態
+  const { roomID, playerID } = data;
+  if (rooms[roomID] && !rooms[roomID].players.includes(playerID)) {
+    rooms[roomID].players.push(playerID);
+    socket.join(roomID);
+    broadcastRoomState(roomID); // 同步房間狀態
   }
 });
   socket.on('disconnect', () => {
@@ -80,6 +80,7 @@ socket.on("joinRoom", (data) => {
   });
 });
 
+  
 // 伺服器監聽 3000 埠
 server.listen(3000, () => {
   console.log('伺服器正在執行中，埠號為 3000');
