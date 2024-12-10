@@ -225,9 +225,10 @@
  <div id="lobby">
   <input type="text" id="playerID" placeholder="輸入玩家ID">
   <button id="confirmPlayerID">確認玩家ID</button>
-  <button id="createRoom" disabled>創建房間</button>
-  <button id="joinRoom" disabled>加入房間</button>
+  <button id="createRoomBtn">Create Room</button>
+  <button id="joinRoomBtn">Join Room</button>
 
+  <div id="gameStatus"></div>
   <!-- 創建房間的界面，默認隱藏 -->
   <div id="create-room-screen" style="display:none;">
     <h2>創建房間</h2>
@@ -300,15 +301,16 @@
   <button onclick="selectIcon('🍇')">🍇</button>
   <button onclick="selectIcon('🌶️')">🌶️</button>
 </div>
-<div id="chat-box">
+<div id="chatbox">
   <div id="public-chat" class="chat blue">公頻對話</div>
   <div id="private-chat" class="chat pink">私密對話</div>
   <div id="game-chat" class="chat green">對戰對話</div>
   <div id="spectator-chat" class="chat orange">觀戰對話</div>
   <div id="chat-content"></div> <!-- 聊天訊息顯示區 -->
-  <input id="chat-input" type="text" placeholder="輸入訊息..." style="width: 80%; margin: 10px;">
-  <button id="chat-send" style="width: 15%;">發送</button>
-</div>
+  <textarea id="messageInput" placeholder="Type a message..."></textarea>
+    <button id="sendBtn">Send</button>
+  </div>
+
   <div id="game" style="display:none;">
     <h3 id= "game-board-title"> 對戰區</h3>
     <div id="game-board"></div>
