@@ -5,18 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>多人對戰遊戲</title>
   <style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  color: #333333;
-  display: flex;
-  justify-content: center; /* 居中 */
-  align-items: center; /* 垂直居中 */
-  height: 100vh; /* 讓body高度滿版 */
-  width: 100vh; 
-  margin: 0;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    #roomList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 自動排列 */
+      gap: 15px;
+      margin-top: 20px;
+      width: 80%;
+      max-width: 1200px;
+    }
 
+    .room-tile {
+      background-color: #f4f4f9;
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .room-tile:hover {
+      transform: scale(1.05);
+    }
+
+    .room-tile .room-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .room-tile .room-status {
+      font-size: 14px;
+      color: #888;
+    }
+
+    .room-tile.available {
+      background-color: #a2d9ce;
+    }
+
+    .room-tile.full {
+      background-color: #f5b041;
+    }
+
+    .room-tile.waiting {
+      background-color: #e6f7ff;
+    }
 #game-board {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
