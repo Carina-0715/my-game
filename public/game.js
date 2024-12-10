@@ -1,6 +1,47 @@
 // 連接 Socket.io 伺服器
 const socket = io();
+// 儲存房間資料
 const rooms = [];
+
+// 顯示創建房間界面
+document.getElementById('createRoom').addEventListener('click', () => {
+  // 顯示創建房間設置表單
+  document.getElementById('create-room-screen').style.display = 'block';
+  // 隱藏原本的創建房間按鈕
+  document.getElementById('createRoom').style.display = 'none';
+});
+// 創建房間
+document.getElementById('create-room-btn').addEventListener('click', () => {
+  const roomID = prompt('輸入房間ID:');
+  const roomMode = document.getElementById('room-mode').value;  // 獲取選擇的房間模式
+  const spectatorSetting = document.getElementById('spectator-setting').value;  // 獲取選擇的觀戰功能
+  
+  if (roomID) {
+    // 發送創建房間請求到伺服器
+    socket.emit('createRoom', { playerID, roomID, roomMode, spectatorSetting });
+  }
+});
+// 接收房間創建回應
+socket.on('roomCreated', (data) => {
+  if (data.success) {
+    alert(`房間創建成功！房間ID: ${data.roomID}`);
+
+    // 更新房間列表
+    const newRoom = {
+      id: data.roomID,
+      name: `房間 ${data.roomID}`,
+      status: 'available', // 設為空閒
+      mode: data.roomMode,  // 取得房間模式
+      spectatorSetting: data.spectatorSetting  // 取得觀戰設置
+    };
+    rooms.push(newRoom);  // 把新創建的房間添加到房間數組中
+    renderRooms(); // 重新渲染房間列表
+
+    // 隱藏創建房間設置表單，並顯示創建房間按鈕
+    document.getElementById('create-room-screen').style.display = 'none';
+    document.getElementById('createRoom').style.display = 'block';
+  }
+});
 
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
