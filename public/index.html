@@ -186,8 +186,7 @@ body {
     <input type="text" id="playerID" placeholder="輸入玩家ID">
     <button id="confirmPlayerID">確認玩家ID</button>
   </div>
-  <div id="room-settings" style="display: none;">
-  <!-- 房間設置 -->
+<div id="room-settings" style="display: none;">
   <label for="room-mode">選擇模式：</label>
   <select id="room-mode">
     <option value="invite">邀請模式</option>
@@ -195,11 +194,16 @@ body {
   </select>
   <button id="create-room">創建房間</button>
 </div>
-
+<div id="spectator-settings" style="display: none;">
+  <label>是否允許觀戰：</label>
+  <input type="checkbox" id="allow-spectators">
+  <button id="update-spectator-settings">更新設置</button>
+</div>
 <div id="room-list" style="display: none;">
-  <!-- 公開房間列表 -->
   <h3>公開房間列表</h3>
-  <ul id="rooms"></ul>
+  <ul id="rooms">
+    <!-- 動態添加房間資訊 -->
+  </ul>
 </div>
   <div id="icon-selection" style="display:none;">
   <h2>選擇你的圖示</h2>

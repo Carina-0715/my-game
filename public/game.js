@@ -10,8 +10,6 @@ document.getElementById('confirmPlayerID').addEventListener('click', () => {
   if (playerID) {
     socket.emit('confirmPlayerID', { playerID });
     document.getElementById('player-id').textContent = playerID;
-    document.getElementById('createRoom').disabled = false;
-    document.getElementById('joinRoom').disabled = false;
   } else {
     alert('請輸入玩家ID');
   }
@@ -31,11 +29,32 @@ socket.on('playerIDChecked', (data) => {
   }
 });
 
+function showRoomOptions() {
+  // 隱藏玩家ID輸入界面
+  document.getElementById('lobby').style.display = 'none';
+
+  // 顯示房間設置界面
+  document.getElementById('room-settings').style.display = 'block';
+
+  // 顯示房間列表（公開房間）
+  document.getElementById('room-list').style.display = 'block';
+}
 
 // 創建房間
-document.getElementById('createRoom').addEventListener('click', () => {
-  const roomID = prompt('輸入房間ID:');
-  socket.emit('createRoom', { playerID, roomID });
+document.getElementById('create-room').addEventListener('click', () => {
+  const roomMode = document.getElementById('room-mode').value;
+
+  // 發送創建房間請求
+  socket.emit('createRoom', { playerID, roomMode });
+});
+
+// 接收房間創建成功訊息
+socket.on('roomCreated', (data) => {
+  alert(`房間創建成功！房間ID: ${data.roomID}`);
+  if (data.roomMode === 'invite') {
+    const inviteLink = `http://example.com/join/${data.roomID}`;
+    alert(`邀請連結已生成：${inviteLink}`);
+  }
 });
 
 // 加入房間
@@ -44,19 +63,7 @@ document.getElementById('joinRoom').addEventListener('click', () => {
   socket.emit('joinRoom', { playerID, roomID });
 });
 
-// 接收房間創建回應
-socket.on('roomCreated', (data) => {
-  if (data.success) {
-    alert(`房間創建成功！房間ID: ${data.roomID}`);
-    
-    // 隱藏遊戲大廳標題
-    document.getElementById('lobby-title').style.display = 'none';
-   // 隱藏九九乘法表遊戲標題
-    document.getElementById('game-board-title').style.display = 'none';
-    
-    startGame(data.roomID);
-  }
-});
+
 
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
@@ -64,6 +71,28 @@ socket.on('playerJoined', (data) => {
   startGame(data.roomID);
 });
 
+// 更新觀戰設置
+document.getElementById('update-spectator-settings').addEventListener('click', () => {
+  const allowSpectators = document.getElementById('allow-spectators').checked;
+
+  // 發送設置到伺服器
+  socket.emit('updateSpectatorSettings', { roomID, allowSpectators });
+});
+// 更新房間列表
+socket.on('updateRoomList', (rooms) => {
+  const roomList = document.getElementById('rooms');
+  roomList.innerHTML = ''; // 清空列表
+  rooms.forEach((room) => {
+    const listItem = document.createElement('li');
+    listItem.textContent = `房間ID: ${room.id} | 人數: ${room.players}/4 | 狀態: ${room.status}`;
+    roomList.appendChild(listItem);
+  });
+});
+
+// 接收伺服器回應
+socket.on('spectatorSettingsUpdated', (data) => {
+  alert(`觀戰設置已更新：${data.allowSpectators ? '允許觀戰' : '禁止觀戰'}`);
+});
 
 // 開始遊戲
 function startGame(roomID) {
