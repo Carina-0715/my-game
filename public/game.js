@@ -13,7 +13,7 @@ document.getElementById('createRoom').addEventListener('click', () => {
 
 // 創建房間
 document.getElementById('create-room-btn').addEventListener('click', () => {
-  const roomID = prompt('輸入房間名稱:');
+  const roomID = prompt('輸入房間ID:');
   const roomMode = document.getElementById('room-mode').value;  // 獲取選擇的房間模式
   const spectatorSetting = document.getElementById('spectator-setting').value;  // 獲取選擇的觀戰功能 
   if (roomID) {
@@ -23,33 +23,16 @@ document.getElementById('create-room-btn').addEventListener('click', () => {
 });
 
 
-socket.on("receiveMessage", (data) => {
-  const { playerID, message } = data;
-
-  // 創建訊息 DOM
-  const messageDiv = document.createElement("div");
-  messageDiv.classList.add("chat", "blue"); // 顏色可根據需要更改
-  messageDiv.textContent = `${playerID}: ${message}`;
-
-  // 添加到聊天框
-  const chatContent = document.getElementById("chat-content");
-  chatContent.appendChild(messageDiv);
-
-  // 保持滾動到底部
-  chatContent.scrollTop = chatContent.scrollHeight;
-});
 
 
 // 接收房間創建回應
 socket.on('roomCreated', (data) => {
   if (data.success) {
     alert(`房間創建成功！房間ID: ${data.roomID}`);
-    currentRoomId = data.roomID; // 從伺服器獲取房間 ID
-  console.log("房間已創建，ID:", currentRoomId);
 
     // 更新房間列表
     const newRoom = {
-      id: data.roomId,
+      id: data.roomID,
       name: `房間 ${data.roomID}`,
       status: 'available', // 設為空閒
       mode: data.roomMode,  // 取得房間模式
@@ -115,26 +98,23 @@ socket.on('checkPlayerIDResult', (data) => {
   }
 });
 
-let currentRoomId = null; // 初始化為 null
 
 // 加入房間
 document.getElementById('joinRoom').addEventListener('click', () => {
   const roomID = prompt('輸入房間ID:');
   if (roomID) {
-    socket.emit("joinRoom", { roomID: currentRoomId });
+    socket.emit('joinRoom', { playerID, roomID });
   }
 });
+
+
 
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);
-  currentRoomId = data.roomID; // 更新當前房間 ID
-  console.log("已加入房間，ID:", currentRoomId);
   // 進入遊戲畫面
   startGame(data.roomID);
 });
-
-
 
 // 開始遊戲
 function startGame(roomID) {

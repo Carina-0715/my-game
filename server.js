@@ -7,46 +7,6 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 let players = {};  // 儲存已註冊的玩家ID
-const chatInput = document.getElementById("chat-input");
-const chatSendButton = document.getElementById("chat-send");
-let currentRoomId = null; // 初始化為 null
-
-chatSendButton.addEventListener("click", () => {
-  const message = chatInput.value.trim();
-  if (message && currentRoomId) { // 確保房間 ID 已設定
-    socket.emit("sendMessage", { roomID: currentRoomId, message });
-    chatInput.value = ""; // 清空輸入框
-  } else {
-    console.error("尚未加入任何房間！");
-  }
-});
-
-
-// 綁定按鈕的點擊事件
-chatSendButton.addEventListener("click", () => {
-  const message = chatInput.value.trim();
-  if (message) {
-    socket.emit("sendMessage", { roomID: currentRoomId, message });
-    chatInput.value = ""; // 清空輸入框
-  }
-});
-socket.on("sendMessage", (data) => {
-  const { roomID, message } = data;
-  if (rooms[roomID]) {
-    // 保存訊息
-    rooms[roomID].messages.push({ playerID: socket.id, message });
-
-    // 廣播給房間內所有玩家
-    io.to(roomID).emit("receiveMessage", { playerID: socket.id, message });
-  }
-});
-
-// 支援按下 Enter 發送訊息
-chatInput.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    chatSendButton.click();
-  }
-});
 
 
 const rooms = {
@@ -88,12 +48,11 @@ io.on('connection', (socket) => {
     io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
   });
   socket.on("createRoom", (data) => {
-  const { roomID, playerID } = data;
+  const { roomID, playerId } = data;
   if (!rooms[roomID]) {
-    rooms[roomID] = { players: [playerID], messages: [] };
-    socket.emit("roomCreated", { roomID }); // 回傳房間 ID 給創建者
+    rooms[roomID] = { players: [playerId], messages: [] };
     socket.join(roomID);
-    io.emit("updateRoomList", { rooms }); // 廣播更新房間列表
+    io.emit("updateRoomList", rooms); // 廣播房間列表
     broadcastRoomState(roomID); // 同步房間狀態
   }
 });
@@ -115,8 +74,6 @@ socket.on("joinRoom", (data) => {
   if (rooms[roomID] && !rooms[roomID].players.includes(playerID)) {
     rooms[roomID].players.push(playerID);
     socket.join(roomID);
-    socket.emit("roomJoined", { roomID }); // 確認加入成功
-     io.to(roomID).emit("updatePlayerList", { players: rooms[roomID].players }); // 廣播房間玩家列表
     broadcastRoomState(roomID); // 同步房間狀態
   }
 });
