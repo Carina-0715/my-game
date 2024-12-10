@@ -43,21 +43,23 @@ body {
   padding: 5px;
   border-radius: 50%;
 }
-#player-container {
-  display: flex;
-  flex-direction: row; /* 玩家資訊與手牌平行排列 */
-  justify-content: center; /* 水平居中 */
-  gap: -px; /* 設定兩個區塊之間的間距 */
-  margin-top: 20px; /* 可以調整間距 */
+
+#player-info {
+  margin-bottom: 0px; /* 控制玩家資訊區塊與手牌之間的距離 */
+  justify-content: right;
+  margin-left: 200px; /* 玩家資訊往右移 */
 }
 
-#player-info, #player-hand {
-  margin: 10px; /* 每個區塊間的間距 */
+#player-hand {
+  margin:0px;
+  text-align: right;
+  margin-top: 700px; /* 手牌往下移 */
+  margin-right: 500px; /* 玩家資訊往右移 */
 }
 
 #hand-cards {
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
   gap: 10px;
 }
 /* 撲克牌的外觀 */
