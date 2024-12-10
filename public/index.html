@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>多人對戰遊戲</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      color: #333333;
-    }
-    h1, h2, h3 {
-      text-align: center;
-    }
+body {
+  display: flex;
+  justify-content: center; /* 將標題居中 */
+  align-items: center; /* 垂直居中 */
+  gap: 100px; /* 控制標題之間的間距 */
+}
+
+h3, h4, h5, h6 {
+  /* 不需要額外的 display 屬性，已經由 flex 排列 */
+}
     #lobby {
       text-align: center;
       margin: 20px;
@@ -42,11 +44,11 @@
     }
     #player-hand {
       margin: 20px;
-      text-align: center;
+      text-align: left;
     }
     #hand-cards {
       display: flex;
-      justify-content: center;
+      justify-content: left;
       gap: 10px;
     }
 /* 撲克牌的外觀 */
@@ -224,7 +226,7 @@
     <h3>九九乘法表遊戲</h3>
     <div id="game-board"></div>
     <div id="player-info">
-      <h3>玩家資訊</h3>
+      <h4>玩家資訊</h4>
       <p>玩家ID: <span id="player-id"></span></p>
       <p>對手ID: <span id="opponent-id"></span></p>
       <p>體力值: <span id="player-stamina">20</span> / 20</p>
@@ -233,13 +235,13 @@
   </div>
 
   <div id="player-hand" style="display:none;">
-    <h3>你的手牌</h3>
+    <h5>你的手牌</h5>
     <div id="hand-cards"></div> <!-- 顯示手牌的區域 -->
     <button id="submit-cards">確認出牌</button>
   </div>
 
   <div id="move-direction" style="display:none;">
-    <h3>選擇移動方向</h3>
+    <h6>選擇移動方向</h6>
     <button data-direction="up">向上</button>
     <button data-direction="down">向下</button>
     <button data-direction="left">向左</button>
