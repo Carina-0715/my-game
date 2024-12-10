@@ -43,54 +43,48 @@ io.on('connection', (socket) => {
     }
   });
 
-  // 當玩家創建新房間時
-  socket.on('createRoom', (roomData) => {
-    const { roomId, playerId } = roomData;
-    rooms[roomId] = { players: [playerId] }; // 創建新房間並加入玩家
-    players[playerId] = { socketId: socket.id, roomId, isSpectator: false };
-    io.emit('updateRoomList', Object.keys(rooms)); // 廣播更新房間列表
+  // 創建房間
+  socket.on('createRoom', (data) => {
+    const roomID = Math.random().toString(36).substr(2, 6);  // 隨機生成房間ID
+    rooms[roomID] = { players: [data.playerID], allowSpectators: data.allowSpectators, roomMode: data.roomMode };
+    socket.emit('roomCreated', { success: true, roomID });
+    io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
   });
+  socket.on("createRoom", (data) => {
+  const { roomID, playerId } = data;
+  if (!rooms[roomID]) {
+    rooms[roomID] = { players: [playerId], messages: [] };
+    socket.join(roomID);
+    io.emit("updateRoomList", rooms); // 廣播房間列表
+    broadcastRoomState(roomID); // 同步房間狀態
+  }
+});
 
-  // 當玩家加入房間時
-  socket.on('joinRoom', (roomData) => {
-    const { roomId, playerId } = roomData;
-    if (rooms[roomId]) {
-      rooms[roomId].players.push(playerId); // 加入玩家到房間
-      players[playerId] = { socketId: socket.id, roomId, isSpectator: false };
-      io.emit('updateRoomList', Object.keys(rooms)); // 廣播更新房間列表
-      io.to(roomId).emit('playerJoined', { playerId }); // 廣播有玩家加入房間
+  // 玩家加入房間
+  socket.on('joinRoom', (data) => {
+    const { playerID, roomID } = data;
+    if (rooms[roomID]) {
+      rooms[roomID].players.push(playerID);
+      socket.emit('playerJoined', { playerID, roomID });
+      io.emit('roomListUpdated', rooms);  // 更新房間列表
+      
+    } else {
+      socket.emit('error', { message: '房間不存在' });
     }
   });
-
-  // 玩家發送消息（公共、私密或遊戲內）
-  socket.on('sendMessage', (messageData) => {
-    const { roomId, message, playerId, toPlayerId, type } = messageData;
-    if (type === 'public') {
-      io.emit('receiveMessage', { message, playerId }); // 公共對話框消息
-    } else if (type === 'private') {
-      const recipientSocket = players[toPlayerId]?.socketId;
-      if (recipientSocket) {
-        io.to(recipientSocket).emit('receiveMessage', { message, playerId }); // 私密對話框消息
-      }
-    } else if (type === 'inGame') {
-      io.to(roomId).emit('receiveMessage', { message, playerId }); // 遊戲內對話框消息
-    }
-  });
-
-  // 玩家退出房間
+socket.on("joinRoom", (data) => {
+  const { roomID, playerID } = data;
+  if (rooms[roomID] && !rooms[roomID].players.includes(playerID)) {
+    rooms[roomID].players.push(playerID);
+    socket.join(roomID);
+    broadcastRoomState(roomID); // 同步房間狀態
+  }
+});
   socket.on('disconnect', () => {
-    // 從玩家列表中移除
-    for (let playerId in players) {
-      if (players[playerId].socketId === socket.id) {
-        const roomId = players[playerId].roomId;
-        rooms[roomId].players = rooms[roomId].players.filter((id) => id !== playerId); // 移除玩家
-        io.to(roomId).emit('playerLeft', { playerId }); // 廣播有玩家離開
-        delete players[playerId];
-        break;
-      }
-    }
+    console.log('玩家已斷開連接');
   });
 });
+
   
 // 啟動服務器
 server.listen(3000, () => {
