@@ -45,22 +45,12 @@ socket.on('playerIDChecked', (data) => {
   if (data.success) {
     alert(`歡迎，玩家 ${data.playerID}！`);
     // 進入下一步，顯示房間選項
-    showRoomOptions();
+
   } else {
     alert('玩家ID已存在，請重新輸入！');
   }
 });
 
-function showRoomOptions() {
-  // 隱藏玩家ID輸入界面
-  document.getElementById('lobby').style.display = 'none';
-
-  // 顯示房間設置界面
-  document.getElementById('room-settings').style.display = 'block';
-
-  // 顯示房間列表（公開房間）
-  document.getElementById('room-list').style.display = 'block';
-}
 
 // 創建房間
 document.getElementById('createRoom').addEventListener('click', () => {
