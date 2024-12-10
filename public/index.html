@@ -23,43 +23,39 @@
       max-width: 1200px;
     }
 
-    .room-tile {
-      background-color: #f4f4f9;
-      border: 2px solid #ccc;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+.room-tile {
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+}
 
-    .room-tile:hover {
-      transform: scale(1.05);
-    }
+.room-tile .room-name {
+  font-size: 16px;
+  font-weight: bold;
+}
 
-    .room-tile .room-name {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
+.room-tile .room-id, .room-tile .room-players, .room-tile .room-mode, .room-tile .room-spectators, .room-tile .room-status {
+  font-size: 14px;
+  margin-top: 5px;
+}
 
-    .room-tile .room-status {
-      font-size: 14px;
-      color: #888;
-    }
+/* 根據房間狀態添加顏色 */
+.room-tile.available {
+  background-color: #8fbc8f; /* 空閒: 綠色 */
+}
 
-    /* 顏色樣式會根據狀態動態添加 */
-    .room-tile.available {
-      background-color: #a2d9ce;
-    }
+.room-tile.full {
+  background-color: #f08080; /* 已滿: 紅色 */
+}
 
-    .room-tile.full {
-      background-color: #f5b041;
-    }
-
-    .room-tile.waiting {
-      background-color: #e6f7ff;
-    }
+.room-tile.waiting {
+  background-color: #ffd700; /* 等待中: 黃色 */
+}
 #game-board {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
