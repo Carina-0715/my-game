@@ -54,11 +54,27 @@ function startGame(roomID) {
   socket.emit('startGame', { roomID });
 }
 
-// 生成九九乘法表格
+// 隨機圖示列表
+const icons = ['🐶', '🐱', '🦊', '🐯', '🦁', '🐺', '🐭', '🐹', '🐰', '🐻‍❄️', '🐨', '🐔', '🐧', '🦉', '🐸', '🐳', '🦀', '🦞', '🦈', '🐙', '🦭', '🐣', '🪼', '🦖', '🐲', '🦕', '🐞', '🐜', '🐝', '🦗', '☃️', '🌞', '🌟', '🌩️', '🌈', '🍓', '🍉', '🍎', '🍊', '🍒', '🥝', '🍍', '🍌', '🍇', '🌶️'];
+
+let playerIcon = getRandomIcon(); // 默認隨機圖示
+
+function selectIcon(icon) {
+  playerIcon = icon; // 更新玩家選擇的圖示
+  console.log(`選擇的圖示: ${icon}`);
+}
+// 隨機選擇圖示
+function getRandomIcon() {
+  const randomIndex = Math.floor(Math.random() * icons.length);
+  return icons[randomIndex];
+}
+
+// 生成九九乘法表格並隨機放置玩家與對手
 function generateMultiplicationTable() {
   const gameBoard = document.getElementById('game-board');
   gameBoard.innerHTML = ''; // 清空之前的內容
 
+  // 創建 9x9 乘法表格
   for (let i = 1; i <= 9; i++) {
     for (let j = 1; j <= 9; j++) {
       const cell = document.createElement('div');
@@ -67,36 +83,44 @@ function generateMultiplicationTable() {
       gameBoard.appendChild(cell);
     }
   }
+
+  // 隨機選擇兩個格子來放置玩家和對手
+  placePlayersOnBoard();
 }
 
-// 隨機選擇兩個位置放置玩家和對手
+// 隨機放置玩家與對手
 function placePlayersOnBoard() {
   const cells = document.querySelectorAll('.cell');
   const randomPlayerIndex = Math.floor(Math.random() * cells.length);
-  const randomOpponentIndex = Math.floor(Math.random() * cells.length);
+  let randomOpponentIndex = Math.floor(Math.random() * cells.length);
 
   // 確保玩家和對手不會出現在同一格
   while (randomOpponentIndex === randomPlayerIndex) {
     randomOpponentIndex = Math.floor(Math.random() * cells.length);
   }
 
-  // 顯示玩家和對手
+  // 取得玩家與對手的圖示
+  const playerIcon = getRandomIcon();
+  const opponentIcon = getRandomIcon();
+
+  // 設定玩家與對手圖示
   const playerCell = cells[randomPlayerIndex];
   const opponentCell = cells[randomOpponentIndex];
 
-  playerCell.classList.add('player'); // 標記玩家的格子
-  opponentCell.classList.add('opponent'); // 標記對手的格子
+  playerCell.classList.add('player');
+  playerCell.innerHTML = playerIcon; // 顯示玩家圖示
+
+  opponentCell.classList.add('opponent');
+  opponentCell.innerHTML = opponentIcon; // 顯示對手圖示
 }
 
 // 初始化遊戲
 function initGame() {
   generateMultiplicationTable();
-  placePlayersOnBoard();
 }
 
 // 呼叫初始化遊戲
 initGame();
-
 // 顯示手牌
 function displayHand(cards) {
   const handCardsDiv = document.getElementById('hand-cards');

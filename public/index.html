@@ -17,14 +17,15 @@
       text-align: center;
       margin: 20px;
     }
-    #game-board {
-      display: grid;
-      grid-template-columns: repeat(9, 1fr);
-      gap: 2px;
-      margin: 20px auto;
-      width: 40%;
-      text-align: center;
-      justify-content: center;
+/* 乘法表格的樣式 */
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 2px;
+  margin: 20px auto;
+  width: 90%;
+  text-align: center;
+  justify-content: center;
     }
     #game-board div {
       border: 1px solid #cccccc;
@@ -125,12 +126,14 @@
 .cell.player {
   background-color: #a2d9ce;
   border-radius: 50%;
+  font-size: 30px; /* 顯示圖示的大小 */
   font-weight: bold;
 }
 
 .cell.opponent {
   background-color: #f5b041;
   border-radius: 50%;
+  font-size: 30px; /* 顯示圖示的大小 */
   font-weight: bold;
 }
     @keyframes moveEffect {
@@ -167,9 +170,57 @@
     <button id="joinRoom" disabled>加入房間</button>
     <div id="roomList"></div>
   </div>
-  
+  <div id="icon-selection">
+  <h2>選擇你的圖示</h2>
+  <button onclick="selectIcon('🐶')">🐶</button>
+  <button onclick="selectIcon('🐱')">🐱</button>
+  <button onclick="selectIcon('🦊')">🦊</button>
+  <button onclick="selectIcon('🐯')">🐯</button>
+  <button onclick="selectIcon('🦁')">🦁</button>
+  <button onclick="selectIcon('🐺')">🐺</button>
+  <button onclick="selectIcon('🐭')">🐭</button>
+  <button onclick="selectIcon('🐹')">🐹</button>
+  <button onclick="selectIcon('🐰')">🐰</button>
+  <button onclick="selectIcon('🐻‍❄️')">🐻‍❄️</button>
+  <button onclick="selectIcon('🐨')">🐨</button>
+  <button onclick="selectIcon('🐔')">🐔</button>
+  <button onclick="selectIcon('🐧')">🐧</button>
+  <button onclick="selectIcon('🦉')">🦉</button>
+  <button onclick="selectIcon('🐸')">🐸</button>
+  <button onclick="selectIcon('🐳')">🐳</button>
+  <button onclick="selectIcon('🦀')">🦀</button>
+  <button onclick="selectIcon('🦞')">🦞</button>
+  <button onclick="selectIcon('🦈')">🦈</button>
+  <button onclick="selectIcon('🐙')">🐙</button>
+  <button onclick="selectIcon('🦭')">🦭</button>
+  <button onclick="selectIcon('🐣')">🐣</button>
+  <button onclick="selectIcon('🪼')">🪼</button>
+  <button onclick="selectIcon('🦖')">🦖</button>
+  <button onclick="selectIcon('🐲')">🐲</button>
+  <button onclick="selectIcon('🦕')">🦕</button>
+  <button onclick="selectIcon('🐞')">🐞</button>
+  <button onclick="selectIcon('🐜')">🐜</button>
+  <button onclick="selectIcon('🐝')">🐝</button>
+  <button onclick="selectIcon('🦗')">🦗</button>
+  <button onclick="selectIcon('☃️')">☃️</button>
+  <button onclick="selectIcon('🌞')">🌞</button>
+  <button onclick="selectIcon('🌟')">🌟</button>
+  <button onclick="selectIcon('🌩️')">🌩️</button>
+  <button onclick="selectIcon('🌈')">🌈</button>
+  <button onclick="selectIcon('🍓')">🍓</button>
+  <button onclick="selectIcon('🍉')">🍉</button>
+  <button onclick="selectIcon('🍎')">🍎</button>
+  <button onclick="selectIcon('🍊')">🍊</button>
+  <button onclick="selectIcon('🍒')">🍒</button>
+  <button onclick="selectIcon('🥝')">🥝</button>
+  <button onclick="selectIcon('🍍')">🍍</button>
+  <button onclick="selectIcon('🍌')">🍌</button>
+  <button onclick="selectIcon('🍇')">🍇</button>
+  <button onclick="selectIcon('🌶️')">🌶️</button>
+</div>
+
   <div id="game" style="display:none;">
-    <h2>九九乘法表遊戲</h2>
+    <h3>九九乘法表遊戲</h3>
     <div id="game-board"></div>
     <div id="player-info">
       <h3>玩家資訊</h3>
@@ -180,13 +231,13 @@
     </div>
   </div>
 
-  <div id="player-hand">
+  <div id="player-hand" style="display:none;">
     <h3>你的手牌</h3>
     <div id="hand-cards"></div> <!-- 顯示手牌的區域 -->
     <button id="submit-cards">確認出牌</button>
   </div>
 
-  <div id="move-direction">
+  <div id="move-direction" style="display:none;">
     <h3>選擇移動方向</h3>
     <button data-direction="up">向上</button>
     <button data-direction="down">向下</button>
