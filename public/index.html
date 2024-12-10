@@ -5,26 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>多人對戰遊戲</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      color: #333333;
-      display: flex;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333333;
+  display: flex;
   justify-content: center; /* 將元素居中 */
-  align-items: center; /* 垂直居中 */
-  flex-direction: row; /* 預設值，會讓標題並排 */
+  align-items: flex-start; /* 讓所有元素對齊在上方 */
+  flex-direction: column; /* 改為垂直排列 */
 }
-    }
-  
-    h3, h5, {
+
+h3, h5 {
   display: inline-block;
   margin-right: 10px; /* 控制標題之間的間距 */
 }
-    #lobby {
-      text-align: center;
-      margin: 20px;
-    }
-/* 乘法表格的樣式 */
+
 #game-board {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
@@ -34,28 +29,35 @@
   height: 40%;
   text-align: center;
   justify-content: center;
-    }
-    #game-board div {
-      border: 1px solid #cccccc;
-      padding: 10px;
-      background-color: #f9f9f9;
-    }
-    .player, .opponent {
-      font-weight: bold;
-      color: white;
-      background-color: blue;
-      padding: 5px;
-      border-radius: 50%;
-    }
-    #player-hand {
-      margin: 20px;
-      text-align: left;
-    }
-    #hand-cards {
-      display: flex;
-      justify-content: left;
-      gap: 10px;
-    }
+}
+
+#game-board div {
+  border: 1px solid #cccccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+.player, .opponent {
+  font-weight: bold;
+  color: white;
+  background-color: blue;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+#player-info {
+  margin-bottom: 10px; /* 控制玩家資訊區塊與手牌之間的距離 */
+}
+
+#player-hand {
+  margin: 20px;
+  text-align: left;
+}
+
+#hand-cards {
+  display: flex;
+  justify-content: left;
+  gap: 10px;
+}
 /* 撲克牌的外觀 */
 .card {
   width: 80px;
