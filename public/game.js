@@ -15,7 +15,22 @@ document.getElementById('confirmPlayerID').addEventListener('click', () => {
   } else {
     alert('請輸入玩家ID');
   }
+
+// 發送玩家ID到伺服器，進行唯一性檢查
+  socket.emit('checkPlayerID', playerID);
 });
+
+// 接收伺服器檢查結果
+socket.on('playerIDChecked', (data) => {
+  if (data.success) {
+    alert(`歡迎，玩家 ${data.playerID}！`);
+    // 進入下一步，顯示房間選項
+    showRoomOptions();
+  } else {
+    alert('玩家ID已存在，請重新輸入！');
+  }
+});
+
 
 // 創建房間
 document.getElementById('createRoom').addEventListener('click', () => {

@@ -185,10 +185,22 @@ body {
   <div id="lobby">
     <input type="text" id="playerID" placeholder="輸入玩家ID">
     <button id="confirmPlayerID">確認玩家ID</button>
-    <button id="createRoom" disabled>創建房間</button>
-    <button id="joinRoom" disabled>加入房間</button>
-    <div id="roomList"></div>
   </div>
+  <div id="room-settings" style="display: none;">
+  <!-- 房間設置 -->
+  <label for="room-mode">選擇模式：</label>
+  <select id="room-mode">
+    <option value="invite">邀請模式</option>
+    <option value="public">公開模式</option>
+  </select>
+  <button id="create-room">創建房間</button>
+</div>
+
+<div id="room-list" style="display: none;">
+  <!-- 公開房間列表 -->
+  <h3>公開房間列表</h3>
+  <ul id="rooms"></ul>
+</div>
   <div id="icon-selection" style="display:none;">
   <h2>選擇你的圖示</h2>
   <button onclick="selectIcon('🐶')">🐶</button>

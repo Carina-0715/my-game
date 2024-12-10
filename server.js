@@ -12,7 +12,17 @@ app.use(express.static('public'));  // 提供靜態資源
 
 io.on('connection', (socket) => {
   console.log('玩家已連接：' + socket.id);
+const playerIDs = new Set(); // 儲存已註冊的玩家ID
 
+// 檢查玩家ID唯一性
+socket.on('checkPlayerID', (playerID) => {
+  if (playerIDs.has(playerID)) {
+    socket.emit('playerIDChecked', { success: false });
+  } else {
+    playerIDs.add(playerID);
+    socket.emit('playerIDChecked', { success: true, playerID });
+  }
+});
   // 創建房間
   socket.on('createRoom', (data) => {
     const roomID = Math.random().toString(36).substr(2, 6);  // 隨機生成房間ID
