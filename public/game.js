@@ -49,8 +49,15 @@ socket.on('roomCreated', (data) => {
 
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
-function renderRooms() {
-  console.log(rooms);
+function renderRooms(rooms) {
+  if (!rooms || rooms.length === 0) {
+    console.log('No rooms to display');
+    return; // 若無房間資料，則不執行渲染
+  }
+    if (!Array.isArray(rooms)) {
+    console.error('房間資料格式錯誤:', rooms);
+    return; // 如果不是陣列，終止執行
+  }
   roomListElement.innerHTML = ''; // 清空房間列表
   rooms.forEach(room => {
     const roomTile = document.createElement('div');
@@ -81,10 +88,13 @@ roomTile.classList.add(room.status); // 根據 status 動態加樣式
   });
 }
 socket.on('roomsList', (rooms) => {
-  console.log('Rooms data:', rooms);
-  renderRooms(); // 確保在資料接收後調用
+  console.log('Received rooms data:', rooms);  // 確認是否有正確接收到資料
+  if (rooms && Array.isArray(rooms)) {
+    renderRooms(rooms);
+  } else {
+    console.error('Received rooms data is not an array or is undefined!');
+  }
 });
-
 // 儲存玩家ID
 let playerID = '';
 
