@@ -5,150 +5,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>多人對戰遊戲</title>
   <style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  color: #333333;
-  display: flex;
-  justify-content: center; /* 居中 */
-  align-items: center; /* 垂直居中 */
-  height: 100vh; /* 讓body高度滿版 */
-  width: 100vh; 
-  margin: 0;
-}
-
-#game-board {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
-  margin: 1px auto;
-  width: 40%;
-  height: 40%;
-  text-align: center;
-}
-
-#game-board div {
-  border: 2px solid #cccccc;
-  padding: 12px;
-  background-color: #f9f9f9;
-}
-.player, .opponent {
-  font-weight: bold;
-  color: white;
-  background-color: blue;
-  padding: 5px;
-  border-radius: 50%;
-}
-
-#player-info {
-  margin-bottom: 1px; /* 控制玩家資訊區塊與手牌之間的距離 */
-  justify-content: right;
-  margin-left: 150px; /* 玩家資訊往右移 */
-}
-
-#player-hand {
-  position: absolute; /* 使元素脫離正常文檔流 */
-  margin: 1px;
-  text-align: center;
-  margin-top: 500px; /* 手牌往下移 */
-  margin-left: 500px; /* 玩家資訊往左移 */
-}
-
-#hand-cards {
-  display: flex;
-  justify-content: right;
-  gap: 10px;
-}
-/* 撲克牌的外觀 */
-.card {
-  width: 80px;
-  height: 120px;
-  background-color: white;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  font-family: 'Arial', sans-serif;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: scale(1.1);
-}
-
-.card.selected {
-  border-color: blue;
-  font-weight: bold;
-}
-
-/* 左上角的數字 */
-.card .top-left {
-  position: absolute;
-  font-size: 18px;
-  font-weight: bold;
-  color: black;
-  top: 5px;
-  left: 5px;
-}
-
-/* 中間的大符號 */
-.card .center {
-  font-size: 40px; /* 更大的符號 */
-  font-weight: bold;
-  color: black;  /* 中央顏色 */
-}
-
-/* 底部不顯示數字與符號 */
-.card .bottom-right {
-  display: none;
-}
-
-.cell {
-  width: 50px;
-  height: 50px;
-  border: 1px solid #cccccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  position: relative;
-}
-
-/* 玩家與對手的標記 */
-.cell.player {
-  background-color: #a2d9ce;
-  border-radius: 50%;
-  font-size: 30px; /* 顯示圖示的大小 */
-  font-weight: bold;
-}
-
-.cell.opponent {
-  background-color: #f5b041;
-  border-radius: 50%;
-  font-size: 30px; /* 顯示圖示的大小 */
-  font-weight: bold;
-}
-    @keyframes moveEffect {
-      from {
-        transform: scale(0.8);
-      }
-      to {
-        transform: scale(1);
-      }
+    /* 基本樣式 */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
+
+    /* 遊戲大廳樣式 */
+    #lobby-title {
+      margin-bottom: 20px;
+    }
+
+    #lobby, #room-settings, #spectator-settings, #room-list, #join-room {
+      margin-bottom: 15px;
+    }
+
+    /* 遊戲主畫面樣式 */
+    #game {
+      display: none;
+      text-align: center;
+    }
+
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      margin: 10px auto;
+      width: 40%;
+      height: 40%;
+      text-align: center;
+    }
+
+    #game-board div {
+      border: 2px solid #cccccc;
+      padding: 12px;
+      background-color: #f9f9f9;
+    }
+
+    .cell {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #cccccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      position: relative;
+    }
+
+    /* 玩家與對手標記 */
+    .cell.player {
+      background-color: #a2d9ce;
+      border-radius: 50%;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .cell.opponent {
+      background-color: #f5b041;
+      border-radius: 50%;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    /* 手牌區域 */
+    #player-hand {
+      position: absolute;
+      bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .card {
+      width: 80px;
+      height: 120px;
+      background-color: white;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+    }
+
+    /* 生命條 */
     .stamina-bar {
       width: 200px;
       height: 20px;
       background-color: #dddddd;
       border-radius: 10px;
       overflow: hidden;
-      position: relative;
     }
+
     .stamina-bar span {
       display: block;
       height: 100%;
@@ -156,112 +119,80 @@ body {
       width: 100%;
       transition: width 0.5s ease;
     }
-#chat-box {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  width: 500px;
-  height: 500px;
-  z-index: 1000; /* 保證它不被其他元素擋住 */
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  overflow-y: auto;
-}
-.chat {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 5px;
-  overflow-wrap: break-word;
-}
-.blue { background: #e0f7fa; }
-.pink { background: #fce4ec; }
-.green { background: #e8f5e9; }
-.orange { background: #fff3e0; }
+
+    /* 聊天框樣式 */
+    #chat-box {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 500px;
+      height: 500px;
+      z-index: 1000;
+      background-color: #ffffff;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      overflow-y: auto;
+    }
+
+    .chat {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      overflow-wrap: break-word;
+    }
+
+    .blue { background: #e0f7fa; }
+    .pink { background: #fce4ec; }
+    .green { background: #e8f5e9; }
+    .orange { background: #fff3e0; }
   </style>
 </head>
 <body>
+
+  <!-- 遊戲大廳 -->
   <h1 id="lobby-title">遊戲大廳</h1>
   <div id="lobby">
     <input type="text" id="playerID" placeholder="輸入玩家ID">
     <button id="confirmPlayerID">確認玩家ID</button>
   </div>
-<div id="room-settings" style="display: none;">
-  <label for="room-mode">選擇模式：</label>
-  <select id="room-mode">
-    <option value="invite">邀請模式</option>
-    <option value="public">公開模式</option>
-  </select>
-  <button id="create-room">創建房間</button>
-</div>
-<div id="spectator-settings" style="display: none;">
-  <label>是否允許觀戰：</label>
-  <input type="checkbox" id="allow-spectators">
-  <button id="update-spectator-settings">更新設置</button>
-</div>
-<div id="room-list" style="display: none;">
-  <h3>公開房間列表</h3>
-  <ul id="rooms">
-    <!-- 動態添加房間資訊 -->
-  </ul>
-</div>
-  <div id="icon-selection" style="display:none;">
-  <h2>選擇你的圖示</h2>
-  <button onclick="selectIcon('🐶')">🐶</button>
-  <button onclick="selectIcon('🐱')">🐱</button>
-  <button onclick="selectIcon('🦊')">🦊</button>
-  <button onclick="selectIcon('🐯')">🐯</button>
-  <button onclick="selectIcon('🦁')">🦁</button>
-  <button onclick="selectIcon('🐺')">🐺</button>
-  <button onclick="selectIcon('🐭')">🐭</button>
-  <button onclick="selectIcon('🐹')">🐹</button>
-  <button onclick="selectIcon('🐰')">🐰</button>
-  <button onclick="selectIcon('🐻‍❄️')">🐻‍❄️</button>
-  <button onclick="selectIcon('🐨')">🐨</button>
-  <button onclick="selectIcon('🐔')">🐔</button>
-  <button onclick="selectIcon('🐧')">🐧</button>
-  <button onclick="selectIcon('🦉')">🦉</button>
-  <button onclick="selectIcon('🐸')">🐸</button>
-  <button onclick="selectIcon('🐳')">🐳</button>
-  <button onclick="selectIcon('🦀')">🦀</button>
-  <button onclick="selectIcon('🦞')">🦞</button>
-  <button onclick="selectIcon('🦈')">🦈</button>
-  <button onclick="selectIcon('🐙')">🐙</button>
-  <button onclick="selectIcon('🦭')">🦭</button>
-  <button onclick="selectIcon('🐣')">🐣</button>
-  <button onclick="selectIcon('🪼')">🪼</button>
-  <button onclick="selectIcon('🦖')">🦖</button>
-  <button onclick="selectIcon('🐲')">🐲</button>
-  <button onclick="selectIcon('🦕')">🦕</button>
-  <button onclick="selectIcon('🐞')">🐞</button>
-  <button onclick="selectIcon('🐜')">🐜</button>
-  <button onclick="selectIcon('🐝')">🐝</button>
-  <button onclick="selectIcon('🦗')">🦗</button>
-  <button onclick="selectIcon('☃️')">☃️</button>
-  <button onclick="selectIcon('🌞')">🌞</button>
-  <button onclick="selectIcon('🌟')">🌟</button>
-  <button onclick="selectIcon('🌩️')">🌩️</button>
-  <button onclick="selectIcon('🌈')">🌈</button>
-  <button onclick="selectIcon('🍓')">🍓</button>
-  <button onclick="selectIcon('🍉')">🍉</button>
-  <button onclick="selectIcon('🍎')">🍎</button>
-  <button onclick="selectIcon('🍊')">🍊</button>
-  <button onclick="selectIcon('🍒')">🍒</button>
-  <button onclick="selectIcon('🥝')">🥝</button>
-  <button onclick="selectIcon('🍍')">🍍</button>
-  <button onclick="selectIcon('🍌')">🍌</button>
-  <button onclick="selectIcon('🍇')">🍇</button>
-  <button onclick="selectIcon('🌶️')">🌶️</button>
-</div>
-<div id="chat-box">
-  <div id="public-chat" class="chat blue">公頻對話</div>
-  <div id="private-chat" class="chat pink">私密對話</div>
-  <div id="game-chat" class="chat green">對戰對話</div>
-  <div id="spectator-chat" class="chat orange">觀戰對話</div>
-</div>
-  <div id="game" style="display:none;">
-    <h3 id= "game-board-title"> 九九乘法表遊戲</h3>
+
+  <!-- 房間設置 -->
+  <div id="room-settings" style="display: none;">
+    <label for="room-mode">選擇模式：</label>
+    <select id="room-mode">
+      <option value="invite">邀請模式</option>
+      <option value="public">公開模式</option>
+    </select>
+    <button id="create-room">創建房間</button>
+  </div>
+
+  <!-- 是否允許觀戰 -->
+  <div id="spectator-settings" style="display: none;">
+    <label>是否允許觀戰：</label>
+    <input type="checkbox" id="allow-spectators">
+    <button id="update-spectator-settings">更新設置</button>
+  </div>
+
+  <!-- 公開房間列表 -->
+  <div id="room-list" style="display: none;">
+    <h3>公開房間列表</h3>
+    <ul id="rooms">
+      <!-- 動態添加房間資訊 -->
+    </ul>
+  </div>
+
+  <!-- 加入房間 -->
+  <div id="join-room" style="display: none;">
+    <label for="join-room-id">輸入房間ID：</label>
+    <input type="text" id="join-room-id">
+    <button id="join-room-btn">加入房間</button>
+  </div>
+
+  <!-- 遊戲主畫面 -->
+  <div id="game">
+    <h3 id="game-board-title">九九乘法表遊戲</h3>
     <div id="game-board"></div>
+
     <div id="player-info">
       <h4>玩家資訊</h4>
       <p>玩家ID: <span id="player-id"></span></p>
@@ -271,12 +202,19 @@ body {
     </div>
   </div>
 
-  <div id="player-hand" style="display:none;">
-    <div id="hand-cards"></div> <!-- 顯示手牌的區域 -->
+  <!-- 手牌區域 -->
+  <div id="player-hand" style="display: none;">
+    <div id="hand-cards"></div>
     <button id="submit-cards">確認出牌</button>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="game.js"></script> <!-- 引入遊戲邏輯的JavaScript -->
+  <!-- 聊天框 -->
+  <div id="chat-box">
+    <div id="public-chat" class="chat blue">公頻對話</div>
+    <div id="private-chat" class="chat pink">私密對話</div>
+    <div id="game-chat" class="chat green">對戰對話</div>
+    <div id="spectator-chat" class="chat orange">觀戰對話</div>
+  </div>
+
 </body>
 </html>

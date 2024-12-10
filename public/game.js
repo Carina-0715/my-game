@@ -3,18 +3,19 @@ const socket = io();
 
 // 儲存玩家ID
 let playerID = '';
+let roomID = ''; // 添加房間ID的全域變數
 
 // 確認玩家ID
-document.getElementById('confirmPlayerID').addEventListener('click', () => {
-  playerID = document.getElementById('playerID').value;
+document.getElementById('confirm-player-id').addEventListener('click', () => {
+  playerID = document.getElementById('input-player-id').value.trim();
   if (playerID) {
     socket.emit('confirmPlayerID', { playerID });
-    document.getElementById('player-id').textContent = playerID;
+    document.getElementById('player-id-display').textContent = playerID;
   } else {
     alert('請輸入玩家ID');
   }
 
-// 發送玩家ID到伺服器，進行唯一性檢查
+  // 發送玩家ID到伺服器，進行唯一性檢查
   socket.emit('checkPlayerID', playerID);
 });
 
@@ -22,8 +23,7 @@ document.getElementById('confirmPlayerID').addEventListener('click', () => {
 socket.on('playerIDChecked', (data) => {
   if (data.success) {
     alert(`歡迎，玩家 ${data.playerID}！`);
-    // 進入下一步，顯示房間選項
-    showRoomOptions();
+    showRoomOptions(); // 進入房間選項界面
   } else {
     alert('玩家ID已存在，請重新輸入！');
   }
@@ -41,7 +41,7 @@ function showRoomOptions() {
 }
 
 // 創建房間
-document.getElementById('create-room').addEventListener('click', () => {
+document.getElementById('create-room-btn').addEventListener('click', () => {
   const roomMode = document.getElementById('room-mode').value;
 
   // 發送創建房間請求
@@ -50,6 +50,7 @@ document.getElementById('create-room').addEventListener('click', () => {
 
 // 接收房間創建成功訊息
 socket.on('roomCreated', (data) => {
+  roomID = data.roomID; // 儲存房間ID
   alert(`房間創建成功！房間ID: ${data.roomID}`);
   if (data.roomMode === 'invite') {
     const inviteLink = `http://example.com/join/${data.roomID}`;
@@ -58,29 +59,39 @@ socket.on('roomCreated', (data) => {
 });
 
 // 加入房間
-document.getElementById('joinRoom').addEventListener('click', () => {
-  const roomID = prompt('輸入房間ID:');
-  socket.emit('joinRoom', { playerID, roomID });
+document.getElementById('join-room-btn').addEventListener('click', () => {
+  const inputRoomID = document.getElementById('input-room-id').value.trim();
+
+  if (!inputRoomID) {
+    alert('房間ID不能為空！');
+    return;
+  }
+
+  // 發送加入房間請求
+  socket.emit('joinRoom', { playerID, roomID: inputRoomID });
 });
 
-
-
-// 玩家加入房間回應
-socket.on('playerJoined', (data) => {
-  alert(`玩家 ${data.playerID} 加入了房間`);
-  startGame(data.roomID);
+// 接收伺服器回應
+socket.on('roomJoinResponse', (data) => {
+  if (data.success) {
+    roomID = data.roomID; // 更新當前房間ID
+    alert(`加入房間成功！房間ID: ${data.roomID}`);
+  } else {
+    alert(`加入房間失敗：${data.message}`);
+  }
 });
 
 // 更新觀戰設置
-document.getElementById('update-spectator-settings').addEventListener('click', () => {
+document.getElementById('update-spectator-settings-btn').addEventListener('click', () => {
   const allowSpectators = document.getElementById('allow-spectators').checked;
 
   // 發送設置到伺服器
   socket.emit('updateSpectatorSettings', { roomID, allowSpectators });
 });
+
 // 更新房間列表
 socket.on('updateRoomList', (rooms) => {
-  const roomList = document.getElementById('rooms');
+  const roomList = document.getElementById('room-list-container');
   roomList.innerHTML = ''; // 清空列表
   rooms.forEach((room) => {
     const listItem = document.createElement('li');
@@ -89,13 +100,18 @@ socket.on('updateRoomList', (rooms) => {
   });
 });
 
-// 接收伺服器回應
+// 接收觀戰設置更新回應
 socket.on('spectatorSettingsUpdated', (data) => {
   alert(`觀戰設置已更新：${data.allowSpectators ? '允許觀戰' : '禁止觀戰'}`);
 });
 
+// 初始化遊戲
+function initGame() {
+  generateMultiplicationTable();
+}
+
 // 開始遊戲
-function startGame(roomID) {
+function startGame() {
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   document.getElementById('player-hand').style.display = 'block';
