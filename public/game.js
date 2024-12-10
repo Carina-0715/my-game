@@ -23,6 +23,21 @@ document.getElementById('create-room-btn').addEventListener('click', () => {
 });
 
 
+socket.on("receiveMessage", (data) => {
+  const { playerID, message } = data;
+
+  // 創建訊息 DOM
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("chat", "blue"); // 顏色可根據需要更改
+  messageDiv.textContent = `${playerID}: ${message}`;
+
+  // 添加到聊天框
+  const chatContent = document.getElementById("chat-content");
+  chatContent.appendChild(messageDiv);
+
+  // 保持滾動到底部
+  chatContent.scrollTop = chatContent.scrollHeight;
+});
 
 
 // 接收房間創建回應
@@ -32,7 +47,7 @@ socket.on('roomCreated', (data) => {
 
     // 更新房間列表
     const newRoom = {
-      id: data.roomID,
+      id: data.roomId,
       name: `房間 ${data.roomID}`,
       status: 'available', // 設為空閒
       mode: data.roomMode,  // 取得房間模式
@@ -103,10 +118,13 @@ socket.on('checkPlayerIDResult', (data) => {
 document.getElementById('joinRoom').addEventListener('click', () => {
   const roomID = prompt('輸入房間ID:');
   if (roomID) {
-    socket.emit('joinRoom', { playerID, roomID });
+    socket.emit("joinRoom", { roomID: currentRoomId });
   }
 });
-
+// 確保伺服器處理加入房間
+socket.on("joinRoomSuccess", () => {
+  console.log("加入房間成功！");
+});
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);

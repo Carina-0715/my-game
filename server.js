@@ -7,6 +7,36 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 let players = {};  // 儲存已註冊的玩家ID
+const chatInput = document.getElementById("chat-input");
+const chatSendButton = document.getElementById("chat-send");
+
+// 綁定按鈕的點擊事件
+chatSendButton.addEventListener("click", () => {
+  const message = chatInput.value.trim();
+  if (message) {
+    socket.emit("sendMessage", { roomID: currentRoomId, message });
+    chatInput.value = ""; // 清空輸入框
+  }
+});
+socket.on("sendMessage", (data) => {
+  const { roomId, message } = data;
+  if (rooms[roomId]) {
+    // 保存訊息
+    rooms[roomId].messages.push({ playerId: socket.id, message });
+
+    // 廣播給房間內所有玩家
+    io.to(roomId).emit("receiveMessage", { playerId: socket.id, message });
+  }
+});
+
+// 支援按下 Enter 發送訊息
+chatInput.addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    chatSendButton.click();
+  }
+});
+
+
 const rooms = {
   // 範例結構
   // roomId: { players: [], messages: [] }
