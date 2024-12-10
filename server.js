@@ -7,12 +7,25 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 let rooms = {};  // 儲存房間資料
+let players = {};  // 儲存已註冊的玩家ID
 
 // 伺服器靜態資源路徑設定
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
   console.log('玩家已連接：' + socket.id);
+
+  // 玩家ID唯一性檢查
+  socket.on('checkPlayerID', (playerID) => {
+    if (players[playerID]) {
+      // 如果玩家ID已存在
+      socket.emit('checkPlayerIDResult', { success: false });
+    } else {
+      // 玩家ID可用
+      players[playerID] = true;  // 將玩家ID加入已註冊的列表
+      socket.emit('checkPlayerIDResult', { success: true, playerID });
+    }
+  });
 
   // 創建房間
   socket.on('createRoom', (data) => {

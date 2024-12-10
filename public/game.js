@@ -88,7 +88,7 @@ socket.on('checkPlayerIDResult', (data) => {
     document.getElementById('player-id').textContent = playerID;
     document.getElementById('createRoom').disabled = false;
     document.getElementById('joinRoom').disabled = false;
-    alert(`玩家ID ${playerID} 可用！`);
+    alert(`歡迎，玩家 ${data.playerID}！`);
   } else {
     alert('玩家ID已存在，請重新輸入！');
   }
