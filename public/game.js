@@ -50,6 +50,7 @@ socket.on('roomCreated', (data) => {
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
 function renderRooms() {
+  console.log(rooms);
   roomListElement.innerHTML = ''; // 清空房間列表
   rooms.forEach(room => {
     const roomTile = document.createElement('div');
@@ -62,8 +63,11 @@ function renderRooms() {
       <div class="room-spectators">觀戰: ${room.allowSpectators ? '允許' : '禁止'}</div>
       <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
     `;
-    roomTile.classList.add(room.status);  // 根據狀態動態添加顏色樣式
-    
+  roomTile.classList.add(room.status || 'waiting'); // 如果沒有狀態，預設為 'waiting'
+   console.log('Room status:', room.status);
+roomTile.classList.add(room.status); // 根據 status 動態加樣式
+ console.log('Rendering rooms:', rooms); // 查看房間資料
+
     // 添加點擊事件，點擊房間後自動加入並進入遊戲畫面
     roomTile.addEventListener('click', () => {
       socket.emit('joinRoom', { playerID, roomID: room.id });
@@ -76,6 +80,10 @@ function renderRooms() {
     roomListElement.appendChild(roomTile);
   });
 }
+socket.on('roomsList', (rooms) => {
+  console.log('Rooms data:', rooms);
+  renderRooms(); // 確保在資料接收後調用
+});
 
 // 儲存玩家ID
 let playerID = '';
