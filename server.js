@@ -6,9 +6,20 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-let rooms = {};  // 儲存房間資料
 let players = {};  // 儲存已註冊的玩家ID
-
+const rooms = {
+  // 範例結構
+  // roomId: { players: [], messages: [] }
+};
+function broadcastRoomState(roomId) {
+  if (rooms[roomId]) {
+    // 廣播該房間的玩家列表和對話框訊息
+    io.to(roomId).emit("updateRoomState", {
+      players: rooms[roomId].players,
+      messages: rooms[roomId].messages,
+    });
+  }
+}
 // 伺服器靜態資源路徑設定
 app.use(express.static('public'));
 
@@ -34,6 +45,15 @@ io.on('connection', (socket) => {
     socket.emit('roomCreated', { success: true, roomID });
     io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
   });
+  socket.on("createRoom", (data) => {
+  const { roomID, playerId } = data;
+  if (!rooms[roomID]) {
+    rooms[roomID] = { players: [playerId], messages: [] };
+    socket.join(roomID);
+    io.emit("updateRoomList", rooms); // 廣播房間列表
+    broadcastRoomState(roomID); // 同步房間狀態
+  }
+});
 
   // 玩家加入房間
   socket.on('joinRoom', (data) => {
@@ -42,11 +62,19 @@ io.on('connection', (socket) => {
       rooms[roomID].players.push(playerID);
       socket.emit('playerJoined', { playerID, roomID });
       io.emit('roomListUpdated', rooms);  // 更新房間列表
+      
     } else {
       socket.emit('error', { message: '房間不存在' });
     }
   });
-
+socket.on("joinRoom", (data) => {
+  const { roomId, playerId } = data;
+  if (rooms[roomId] && !rooms[roomId].players.includes(playerId)) {
+    rooms[roomId].players.push(playerId);
+    socket.join(roomId);
+    broadcastRoomState(roomId); // 同步房間狀態
+  }
+});
   socket.on('disconnect', () => {
     console.log('玩家已斷開連接');
   });
