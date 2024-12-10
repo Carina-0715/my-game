@@ -26,33 +26,80 @@ function broadcastRoomState(roomId) {
 
 // 伺服器靜態資源路徑設定
 app.use(express.static('public'));
-// 當有玩家連接時
+// 當有玩家連線時
+// 當有玩家連線時
 io.on('connection', (socket) => {
-  console.log('一位玩家已連接:', socket.id);
+  console.log(`Player connected: ${socket.id}`);
 
-  // 假設玩家在連接時會送出自己的 ID
+  // 註冊玩家
   socket.on('registerPlayer', (playerID) => {
-    players[socket.id] = playerID; // 綁定 socket.id 和 playerID
-    console.log(`玩家已註冊: ${playerID} (${socket.id})`);
+    players[playerID] = socket.id;  // 儲存玩家 ID 和 Socket ID
+    console.log(`Player registered: ${playerID} with socket id ${socket.id}`);
   });
 
-  // 接收玩家訊息
+  // 當接收到玩家發送的訊息時
   socket.on('sendMessage', (data) => {
-    const { playerID, message } = data; // 玩家 ID 與訊息
-    console.log(`收到訊息 - 來自 ${playerID}: ${message}`);
+    const { type, playerID, message } = data;
 
-    // 廣播訊息給所有玩家
-    io.emit('receiveMessage', {
-      type: 'public', // 或 'private' (根據需求更改)
-      sender: playerID, // 傳送者
-      message, // 訊息內容
-    });
+    // 根據訊息的類型來處理訊息發送
+    switch (type) {
+      case 'public':
+        // 發送給所有玩家（公開訊息）
+        io.emit('receiveMessage', {
+          type: 'public',
+          sender: playerID,
+          message: message
+        });
+        break;
+
+      case 'private':
+        // 發送給特定玩家（私密訊息）
+        const targetSocketID = players[playerID];  // 查找對方玩家的 Socket ID
+        if (targetSocketID) {
+          io.to(targetSocketID).emit('receiveMessage', {
+            type: 'private',
+            sender: playerID,
+            message: message
+          });
+        } else {
+          console.log(`Player ${playerID} not found.`);
+        }
+        break;
+
+      case 'game':
+        // 發送給所有玩家（對戰訊息）
+        io.emit('receiveMessage', {
+          type: 'game',
+          sender: playerID,
+          message: message
+        });
+        break;
+
+      case 'spectator':
+        // 發送給觀戰玩家（觀戰訊息）
+        io.emit('receiveMessage', {
+          type: 'spectator',
+          sender: playerID,
+          message: message
+        });
+        break;
+
+      default:
+        console.log('Unknown message type:', type);
+        break;
+    }
   });
 
-  // 當玩家離線時
+  // 當玩家斷線時
   socket.on('disconnect', () => {
-    console.log('一位玩家已離線:', socket.id);
-    delete players[socket.id]; // 移除玩家資訊
+    // 刪除已斷線的玩家
+    for (let playerID in players) {
+      if (players[playerID] === socket.id) {
+        delete players[playerID];
+        console.log(`Player disconnected: ${playerID}`);
+        break;
+      }
+    }
   });
 });
 io.on('connection', (socket) => {

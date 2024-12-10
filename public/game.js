@@ -57,7 +57,12 @@ function getChatClass(type) {
     default: return '';
   }
 }
-
+// 假設當前選擇的是私密訊息
+socket.emit('sendMessage', { 
+  type: 'private', 
+  playerID: 'player1',  // 發送者的 ID
+  message: 'Hello, this is a private message!' 
+});
 // 假設有一組訊息（可以是從伺服器接收到的數據）
 const messages = [
   { type: 'public', sender: 'player1', message: 'Hello everyone!' },
@@ -66,26 +71,20 @@ const messages = [
   { type: 'spectator', sender: 'player3', message: 'Watching the game.' }
 ];
 
-// 當前發送訊息
-chatSend.addEventListener('click', () => {
-  const message = chatInput.value.trim();
-  if (message) {
-    // 假設發送的是公頻訊息
-    const newMessage = { type: 'public', sender: 'player1', message };
-    messages.push(newMessage); // 儲存訊息
-    chatInput.value = ''; // 清空輸入框
-    renderChatContent(); // 更新顯示
-  }
-});
-
-// 預設顯示公頻
-renderChatContent();
+// 取得選擇的訊息類型
+const chatTypeSelect = document.getElementById('chat-type');  // 假設你有個選擇框來選擇訊息類型
 
 chatSend.addEventListener('click', () => {
   const message = chatInput.value.trim();
+  const chatType = chatTypeSelect.value;  // 獲取訊息類型：'public', 'private', 'game', 'spectator'
+  
   if (message) {
-    socket.emit('sendMessage', { playerID: playerIDInput.value, message });
-    chatInput.value = '';
+    socket.emit('sendMessage', {
+      type: chatType,  // 訊息類型
+      playerID: playerIDInput.value,  // 玩家 ID
+      message: message
+    });
+    chatInput.value = '';  // 清空輸入框
   }
 });
 
@@ -94,8 +93,9 @@ socket.on('receiveMessage', (data) => {
   newMessage.className = `chat ${data.type}`;
   newMessage.textContent = `${data.sender}: ${data.message}`;
   chatContent.appendChild(newMessage);
-  chatContent.scrollTop = chatContent.scrollHeight; // 滾動到底部
+  chatContent.scrollTop = chatContent.scrollHeight;  // 滾動到底部
 });
+
 
 // 顯示創建房間界面
 document.getElementById('createRoom').addEventListener('click', () => {
