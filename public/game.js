@@ -16,7 +16,7 @@ document.getElementById('confirmPlayerID').addEventListener('click', () => {
     alert('請輸入玩家ID');
   }
 });
-
+socket.emit('privateMessage', { from: playerID, to: targetPlayerID, message });
 // 創建房間
 document.getElementById('createRoom').addEventListener('click', () => {
   const roomID = prompt('輸入房間ID:');

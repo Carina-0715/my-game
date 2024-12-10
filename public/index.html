@@ -156,6 +156,28 @@ body {
       width: 100%;
       transition: width 0.5s ease;
     }
+#chat-box {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 500px;
+  height: 500px;
+  z-index: 1000; /* 保證它不被其他元素擋住 */
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  overflow-y: auto;
+}
+.chat {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  overflow-wrap: break-word;
+}
+.blue { background: #e0f7fa; }
+.pink { background: #fce4ec; }
+.green { background: #e8f5e9; }
+.orange { background: #fff3e0; }
   </style>
 </head>
 <body>
@@ -215,7 +237,12 @@ body {
   <button onclick="selectIcon('🍇')">🍇</button>
   <button onclick="selectIcon('🌶️')">🌶️</button>
 </div>
-
+<div id="chat-box">
+  <div id="public-chat" class="chat blue">公頻對話</div>
+  <div id="private-chat" class="chat pink">私密對話</div>
+  <div id="game-chat" class="chat green">對戰對話</div>
+  <div id="spectator-chat" class="chat orange">觀戰對話</div>
+</div>
   <div id="game" style="display:none;">
     <h3 id= "game-board-title"> 九九乘法表遊戲</h3>
     <div id="game-board"></div>
