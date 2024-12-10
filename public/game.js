@@ -18,6 +18,10 @@ function renderRooms() {
     // 添加點擊事件，點擊房間後自動加入並進入遊戲畫面
     roomTile.addEventListener('click', () => {
       socket.emit('joinRoom', { playerID, roomID: room.id });
+      // 加入房間後隱藏大廳，顯示遊戲畫面
+      document.getElementById('lobby').style.display = 'none';  // 隱藏大廳
+      document.getElementById('lobby-title').style.display = 'none';  // 隱藏標題
+      document.getElementById('game-board-title').style.display = 'none';  // 顯示遊戲畫面
     });
 
     roomListElement.appendChild(roomTile);
