@@ -109,8 +109,8 @@ let playerHand = [];
 let playerStamina = 20;
 let opponentStamina = 20;
 
-// 定義一副牌（每張牌由花色和數字組成）
-const suits = ['♥️', '♠️', '♦️', '♣️'];
+// 定義一副牌（每張牌由花色和數字組成，這裡用Unicode字符來表示花色）
+const suits = ['♥️', '♠️', '♦️', '♣️'];  // 花色使用Unicode字符
 const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // 隨機發牌函數
@@ -132,15 +132,18 @@ function updateHandDisplay() {
     const cardDiv = document.createElement('div');
     cardDiv.classList.add('card');
     cardDiv.classList.add(card.suit);
+
+    // 更新卡片顯示內容
     cardDiv.innerHTML = `
-      <div class="top-left">${card.value}</div>
-      <div class="center">${card.value}</div>
-      <div class="bottom-right">${card.value}</div>
+      <div class="top-left">${card.value}</div>  <!-- 左上角顯示數字 -->
+      <div class="center">${card.suit}</div>    <!-- 中間顯示符號 -->
     `;
+
     cardDiv.onclick = () => selectCard(index);
     handCardsContainer.appendChild(cardDiv);
   });
 }
+
 
 // 選擇卡牌
 let selectedCards = [];
