@@ -49,6 +49,9 @@ socket.on('roomCreated', (data) => {
 
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
+socket.on('roomListUpdated', (rooms) => {
+  renderRooms(Object.entries(rooms));
+});
 function renderRooms() {
   roomListElement.innerHTML = ''; // 清空房間列表
   rooms.forEach(room => {
@@ -58,7 +61,10 @@ function renderRooms() {
       <div class="room-name">${room.name}</div>
       <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
     `;
+    
+    
     roomTile.classList.add(room.status);  // 根據狀態動態添加顏色樣式
+    
     
     // 添加點擊事件，點擊房間後自動加入並進入遊戲畫面
     roomTile.addEventListener('click', () => {
