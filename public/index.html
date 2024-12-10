@@ -13,11 +13,30 @@
     <button id="joinRoom">加入房間</button>
     <div id="roomList"></div>
   </div>
-<div id="player-hand">
+  <div id="game">
+  <h2>九九乘法表遊戲</h2>
+  <div id="game-board"></div>
+  <div id="player-info">
+    <h3>玩家資訊</h3>
+    <p>玩家ID: <span id="player-id"></span></p>
+    <p>對手ID: <span id="opponent-id"></span></p>
+    <p>體力值: <span id="player-stamina">20</span> / 20</p>
+    <p>對手體力值: <span id="opponent-stamina">20</span> / 20</p>
+  </div>
+</div>
+  <div id="player-hand">
   <h3>你的手牌</h3>
   <div id="hand-cards"></div>
   <button id="submit-cards">確認出牌</button>
 </div>
+<div id="move-direction">
+  <h3>選擇移動方向</h3>
+  <button data-direction="up">向上</button>
+  <button data-direction="down">向下</button>
+  <button data-direction="left">向左</button>
+  <button data-direction="right">向右</button>
+</div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
@@ -45,5 +64,6 @@
       alert(`玩家 ${data.playerID} 加入了房間`);
     });
   </script>
+  
 </body>
 </html>
