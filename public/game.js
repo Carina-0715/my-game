@@ -1,5 +1,25 @@
 // 連接 Socket.io 伺服器
 const socket = io();
+    const rooms = [
+      { id: 1, name: '房間 1', status: 'available' },
+      { id: 2, name: '房間 2', status: 'full' },
+      { id: 3, name: '房間 3', status: 'waiting' },
+      { id: 4, name: '房間 4', status: 'available' },
+      { id: 5, name: '房間 5', status: 'full' }
+    ];
+
+    // 渲染房間列表
+    const roomListElement = document.getElementById('roomList');
+    rooms.forEach(room => {
+      const roomTile = document.createElement('div');
+      roomTile.classList.add('room-tile'); // 不設定顏色，等待動態添加
+      roomTile.innerHTML = `
+        <div class="room-name">${room.name}</div>
+        <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
+      `;
+      roomTile.classList.add(room.status);  // 根據狀態動態添加顏色樣式
+      roomListElement.appendChild(roomTile);
+    });
 
 // 儲存玩家ID
 let playerID = '';
