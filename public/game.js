@@ -32,13 +32,12 @@ document.getElementById('createRoom').addEventListener('click', () => {
 
 // 創建房間
 document.getElementById('create-room-btn').addEventListener('click', () => {
-  const roomID = prompt('輸入房間ID:');
-  const generateRoomName = (roomID) => `房間 ${roomID}`;
+  const roomName = prompt('輸入房間名稱');
   const roomMode = document.getElementById('room-mode').value;  // 獲取選擇的房間模式
   const spectatorSetting = document.getElementById('spectator-setting').value;  // 獲取選擇的觀戰功能 
-  if (roomID) {
+  if (roomName) {
     // 發送創建房間請求到伺服器
-    socket.emit('createRoom', { playerID, roomID, roomMode, spectatorSetting });
+    socket.emit('createRoom', { playerID, roomName, roomMode, spectatorSetting });
   }
 });
 
@@ -62,7 +61,7 @@ socket.on('roomCreated', (data) => {
     // 更新房間列表
     const newRoom = {
       id: data.roomID,
-      name: `房間 ${data.roomID}`,
+      name: data.roomName,  
       status: 'available', // 設為空閒
       mode: data.roomMode,  // 取得房間模式
       spectatorSetting: data.spectatorSetting  // 取得觀戰設置

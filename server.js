@@ -45,11 +45,26 @@ io.on('connection', (socket) => {
 
   // 創建房間
   socket.on('createRoom', (data) => {
-    const roomID = Math.random().toString(36).substr(2, 6);  // 隨機生成房間ID
-    rooms[roomID] = { players: [data.playerID], allowSpectators: data.allowSpectators, roomMode: data.roomMode };
-    socket.emit('roomCreated', { success: true, roomID });
-    io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
+    const roomID = Math.random().toString(36).substring(2, 10); // 隨機生成房間ID
+  const roomName = data.roomName; // 使用前端傳來的房間名稱
+      // 儲存房間資訊
+  rooms[roomID] = {
+    id: roomID,
+    name: roomName, // 使用者指定的名稱
+    mode: data.roomMode,
+    spectatorsAllowed: data.spectatorSetting === 'allow',
+    players: [],
+  };
+
+   // 回傳給創建者
+  socket.emit('roomCreated', {
+    success: true,
+    roomID,            // 隨機生成的房間ID
+    roomName,          // 使用者指定的房間名稱
+    roomMode: data.roomMode,
+    spectatorSetting: data.spectatorSetting,
   });
+});
   socket.on("createRoom", (data) => {
   const { roomID, playerId } = data;
   if (!rooms[roomID]) {
