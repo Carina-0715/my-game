@@ -50,18 +50,15 @@ socket.on('roomCreated', (data) => {
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
 function renderRooms(rooms) {
-  if (!rooms || rooms.length === 0) {
-    console.log('No rooms to display');
-    return; // 若無房間資料，則不執行渲染
-  }
-    if (!Array.isArray(rooms)) {
-    console.error('房間資料格式錯誤:', rooms);
-    return; // 如果不是陣列，終止執行
-  }
-  roomListElement.innerHTML = ''; // 清空房間列表
+  const roomListContainer = document.getElementById('room-list');  // 假設這是顯示房間的容器
+
+  console.log('Rendering rooms:', rooms);  // 打印房間資料
+
+  // 確保容器清空
+  roomListContainer.innerHTML = '';
   rooms.forEach(room => {
     const roomTile = document.createElement('div');
-    roomTile.classList.add('room-tile'); // 不設定顏色，等待動態添加
+    roomTile.classList.add('room'); // 不設定顏色，等待動態添加
     roomTile.innerHTML = `
       <div class="room-name">${room.name}</div>
       <div class="room-id">房間ID: ${room.id}</div>
@@ -88,13 +85,14 @@ roomTile.classList.add(room.status); // 根據 status 動態加樣式
   });
 }
 socket.on('roomsList', (rooms) => {
-   console.log('Received rooms data:', rooms);  // 打印從伺服器接收到的房間資料
+  console.log('Received rooms data:', rooms);  // 確認是否收到資料
   if (Array.isArray(rooms) && rooms.length > 0) {
-    renderRooms(rooms);
+    renderRooms(rooms);  // 呼叫渲染函數
   } else {
-    console.log('No rooms available');
+    console.log('No rooms available');  // 如果沒有房間資料，打印提示
   }
 });
+
 // 儲存玩家ID
 let playerID = '';
 

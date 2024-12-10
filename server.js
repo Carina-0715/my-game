@@ -58,6 +58,8 @@ io.on('connection', (socket) => {
     socket.join(roomID);  // 玩家加入房間
     broadcastRoomState(roomID); // 廣播房間狀態
   });
+  // 發送房間資料
+socket.emit('roomsList', rooms);
 
   // 玩家加入房間
   socket.on('joinRoom', (data) => {
