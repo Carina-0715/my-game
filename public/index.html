@@ -10,11 +10,17 @@ body {
   background-color: #f4f4f9;
   color: #333333;
   display: flex;
-  justify-content: center; /* 將元素居中 */
-  align-items: flex-start; /* 讓所有元素對齊在上方 */
-  flex-direction: column; /* 改為垂直排列 */
+  justify-content: center; /* 居中 */
+  align-items: center; /* 垂直居中 */
+  height: 100vh; /* 讓body高度滿版 */
+  margin: 0;
 }
-
+#game-container {
+  display: flex;
+  flex-direction: column; /* 讓 game-board 和 player-container 在垂直方向排列 */
+  align-items: center;
+  justify-content: flex-start;
+}
 #game-board {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
@@ -23,7 +29,6 @@ body {
   width: 40%;
   height: 40%;
   text-align: center;
-  justify-content: center;
 }
 
 #game-board div {
@@ -38,20 +43,21 @@ body {
   padding: 5px;
   border-radius: 50%;
 }
-
-#player-info {
-  margin-bottom: 10px; /* 控制玩家資訊區塊與手牌之間的距離 */
-  justify-content: right;
+#player-container {
+  display: flex;
+  flex-direction: row; /* 玩家資訊與手牌平行排列 */
+  justify-content: center; /* 水平居中 */
+  gap: -px; /* 設定兩個區塊之間的間距 */
+  margin-top: 20px; /* 可以調整間距 */
 }
 
-#player-hand {
-  margin: 20px;
-  text-align: right;
+#player-info, #player-hand {
+  margin: 10px; /* 每個區塊間的間距 */
 }
 
 #hand-cards {
   display: flex;
-  justify-content: right;
+  justify-content: space-between;
   gap: 10px;
 }
 /* 撲克牌的外觀 */
@@ -224,7 +230,6 @@ body {
   </div>
 
   <div id="player-hand" style="display:none;">
-    <h5>你的手牌</h5>
     <div id="hand-cards"></div> <!-- 顯示手牌的區域 -->
     <button id="submit-cards">確認出牌</button>
   </div>
