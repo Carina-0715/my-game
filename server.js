@@ -9,7 +9,7 @@ const io = socketIo(server);
 let players = {};  // 儲存已註冊的玩家ID
 const chatInput = document.getElementById("chat-input");
 const chatSendButton = document.getElementById("chat-send");
-
+let currentRoomId = null; // 初始化為 null
 // 綁定按鈕的點擊事件
 chatSendButton.addEventListener("click", () => {
   const message = chatInput.value.trim();
@@ -19,13 +19,13 @@ chatSendButton.addEventListener("click", () => {
   }
 });
 socket.on("sendMessage", (data) => {
-  const { roomId, message } = data;
-  if (rooms[roomId]) {
+  const { roomID, message } = data;
+  if (rooms[roomID]) {
     // 保存訊息
-    rooms[roomId].messages.push({ playerId: socket.id, message });
+    rooms[roomID].messages.push({ playerID: socket.id, message });
 
     // 廣播給房間內所有玩家
-    io.to(roomId).emit("receiveMessage", { playerId: socket.id, message });
+    io.to(roomID).emit("receiveMessage", { playerID: socket.id, message });
   }
 });
 

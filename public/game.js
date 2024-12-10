@@ -44,6 +44,8 @@ socket.on("receiveMessage", (data) => {
 socket.on('roomCreated', (data) => {
   if (data.success) {
     alert(`房間創建成功！房間ID: ${data.roomID}`);
+    currentRoomId = data.roomID; // 從伺服器獲取房間 ID
+  console.log("房間已創建，ID:", currentRoomId);
 
     // 更新房間列表
     const newRoom = {
@@ -113,6 +115,7 @@ socket.on('checkPlayerIDResult', (data) => {
   }
 });
 
+let currentRoomId = null; // 初始化為 null
 
 // 加入房間
 document.getElementById('joinRoom').addEventListener('click', () => {
@@ -121,10 +124,7 @@ document.getElementById('joinRoom').addEventListener('click', () => {
     socket.emit("joinRoom", { roomID: currentRoomId });
   }
 });
-// 確保伺服器處理加入房間
-socket.on("joinRoomSuccess", () => {
-  console.log("加入房間成功！");
-});
+
 // 玩家加入房間回應
 socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);
