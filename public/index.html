@@ -14,15 +14,6 @@ body {
   align-items: flex-start; /* 讓所有元素對齊在上方 */
   flex-direction: column; /* 改為垂直排列 */
 }
-.container {
-  display: flex; /* 使用 flex 排列 */
-  justify-content: right; /* 讓兩個區塊在水平方向置中 */
-  gap: 20px; /* 控制兩個區塊之間的間距 */
-}
-h3, h5 {
-  display: inline-block;
-  margin-right: 10px; /* 控制標題之間的間距 */
-}
 
 #game-board {
   display: grid;
@@ -32,7 +23,7 @@ h3, h5 {
   width: 40%;
   height: 40%;
   text-align: center;
-  justify-content: left;
+  justify-content: center;
 }
 
 #game-board div {
@@ -163,7 +154,7 @@ h3, h5 {
   </style>
 </head>
 <body>
-  <h1>遊戲大廳</h1>
+  <h1 id="lobby-title">遊戲大廳</h1>
   <div id="lobby">
     <input type="text" id="playerID" placeholder="輸入玩家ID">
     <button id="confirmPlayerID">確認玩家ID</button>
@@ -221,7 +212,7 @@ h3, h5 {
 </div>
 
   <div id="game" style="display:none;">
-    <h3>九九乘法表遊戲</h3>
+    <h3 id= "game-board-title"> 九九乘法表遊戲</h3>
     <div id="game-board"></div>
     <div id="player-info">
       <h4>玩家資訊</h4>

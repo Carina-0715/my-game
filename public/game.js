@@ -33,6 +33,12 @@ document.getElementById('joinRoom').addEventListener('click', () => {
 socket.on('roomCreated', (data) => {
   if (data.success) {
     alert(`房間創建成功！房間ID: ${data.roomID}`);
+    
+    // 隱藏遊戲大廳標題
+    document.getElementById('lobby-title').style.display = 'none';
+   // 隱藏九九乘法表遊戲標題
+    document.getElementById('game-board-title').style.display = 'none';
+    
     startGame(data.roomID);
   }
 });
@@ -42,7 +48,6 @@ socket.on('playerJoined', (data) => {
   alert(`玩家 ${data.playerID} 加入了房間`);
   startGame(data.roomID);
 });
-
 
 
 // 開始遊戲
