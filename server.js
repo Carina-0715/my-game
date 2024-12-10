@@ -1,12 +1,12 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = socketIo(server);
 
-const PORT = 3000;
+
 
 let players = {};  // 儲存已註冊的玩家ID
 
@@ -27,35 +27,6 @@ function broadcastRoomState(roomId) {
 
 // 伺服器靜態資源路徑設定
 app.use(express.static('public'));
-// 當有玩家連接時
-io.on('connection', (socket) => {
-  console.log('一位玩家已連接:', socket.id);
-
-  // 假設玩家在連接時會送出自己的 ID
-  socket.on('registerPlayer', (playerID) => {
-    players[socket.id] = playerID; // 綁定 socket.id 和 playerID
-    console.log(`玩家已註冊: ${playerID} (${socket.id})`);
-  });
-
-  // 接收玩家訊息
-  socket.on('sendMessage', (data) => {
-    const { playerID, message } = data; // 玩家 ID 與訊息
-    console.log(`收到訊息 - 來自 ${playerID}: ${message}`);
-
-    // 廣播訊息給所有玩家
-    io.emit('receiveMessage', {
-      type: 'public', // 或 'private' (根據需求更改)
-      sender: playerID, // 傳送者
-      message, // 訊息內容
-    });
-  });
-
-  // 當玩家離線時
-  socket.on('disconnect', () => {
-    console.log('一位玩家已離線:', socket.id);
-    delete players[socket.id]; // 移除玩家資訊
-  });
-});
 
 io.on('connection', (socket) => {
   console.log('玩家已連接：' + socket.id);
@@ -85,15 +56,9 @@ io.on('connection', (socket) => {
     players: [],
   };
 
-   // 回傳給創建者
-  socket.emit('roomCreated', {
-    success: true,
-    roomID,            // 隨機生成的房間ID
-    roomName,          // 使用者指定的房間名稱
-    roomMode: data.roomMode,
-    spectatorSetting: data.spectatorSetting,
+    socket.emit('roomCreated', { success: true, roomID });
+    io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
   });
-});
   socket.on("createRoom", (data) => {
   const { roomID, playerId } = data;
   if (!rooms[roomID]) {
