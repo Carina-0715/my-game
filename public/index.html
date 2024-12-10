@@ -14,7 +14,11 @@ body {
   align-items: flex-start; /* 讓所有元素對齊在上方 */
   flex-direction: column; /* 改為垂直排列 */
 }
-
+.container {
+  display: flex; /* 使用 flex 排列 */
+  justify-content: right; /* 讓兩個區塊在水平方向置中 */
+  gap: 20px; /* 控制兩個區塊之間的間距 */
+}
 h3, h5 {
   display: inline-block;
   margin-right: 10px; /* 控制標題之間的間距 */
@@ -28,7 +32,7 @@ h3, h5 {
   width: 40%;
   height: 40%;
   text-align: center;
-  justify-content: center;
+  justify-content: left;
 }
 
 #game-board div {
@@ -46,16 +50,17 @@ h3, h5 {
 
 #player-info {
   margin-bottom: 10px; /* 控制玩家資訊區塊與手牌之間的距離 */
+  justify-content: right;
 }
 
 #player-hand {
   margin: 20px;
-  text-align: left;
+  text-align: right;
 }
 
 #hand-cards {
   display: flex;
-  justify-content: left;
+  justify-content: right;
   gap: 10px;
 }
 /* 撲克牌的外觀 */

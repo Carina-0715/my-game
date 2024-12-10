@@ -43,6 +43,8 @@ socket.on('playerJoined', (data) => {
   startGame(data.roomID);
 });
 
+
+
 // 開始遊戲
 function startGame(roomID) {
   document.getElementById('lobby').style.display = 'none';
