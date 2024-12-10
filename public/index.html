@@ -41,17 +41,59 @@
       margin: 20px;
       text-align: center;
     }
-    #hand-cards div {
-      display: inline-block;
-      margin: 5px;
-      padding: 10px;
-      border: 1px solid #cccccc;
-      background-color: #ffffff;
-      cursor: pointer;
+    #hand-cards {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
     }
-    #hand-cards .selected {
+    /* 撲克牌的外觀 */
+    .card {
+      width: 80px;
+      height: 120px;
+      background-color: white;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: 'Arial', sans-serif;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.1);
+    }
+    .card.selected {
       border-color: blue;
       font-weight: bold;
+    }
+    .card .top-left, .card .bottom-right {
+      position: absolute;
+      font-size: 18px;
+      font-weight: bold;
+      color: red;
+    }
+    .card .top-left {
+      top: 5px;
+      left: 5px;
+    }
+    .card .bottom-right {
+      bottom: 5px;
+      right: 5px;
+    }
+    .card .center {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    /* 定義花色 */
+    .hearts, .diamonds {
+      color: red;
+    }
+    .spades, .clubs {
+      color: black;
     }
     #move-direction button {
       margin: 5px;
@@ -134,19 +176,19 @@
 
   <div id="player-hand">
     <h3>你的手牌</h3>
-    <div id="hand-cards"></div>
+    <div id="hand-cards"></div> <!-- 顯示手牌的區域 -->
     <button id="submit-cards">確認出牌</button>
   </div>
 
   <div id="move-direction">
-    <h3>移動方向</h3>
-    <button data-direction="up">上</button>
-    <button data-direction="down">下</button>
-    <button data-direction="left">左</button>
-    <button data-direction="right">右</button>
+    <h3>選擇移動方向</h3>
+    <button data-direction="up">向上</button>
+    <button data-direction="down">向下</button>
+    <button data-direction="left">向左</button>
+    <button data-direction="right">向右</button>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="game.js"></script>
+  <script src="game.js"></script> <!-- 引入遊戲邏輯的JavaScript -->
 </body>
 </html>

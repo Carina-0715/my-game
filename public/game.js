@@ -104,3 +104,85 @@ document.querySelectorAll('#move-direction button').forEach(button => {
     socket.emit('move', { playerID, direction });
   });
 });
+// 設置初始遊戲狀態
+let playerHand = [];
+let playerStamina = 20;
+let opponentStamina = 20;
+
+// 定義一副牌（每張牌由花色和數字組成）
+const suits = ['♥️', '♠️', '♦️', '♣️'];
+const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// 隨機發牌函數
+function dealCards() {
+  playerHand = [];
+  for (let i = 0; i < 3; i++) {
+    const suit = suits[Math.floor(Math.random() * suits.length)];
+    const value = values[Math.floor(Math.random() * values.length)];
+    playerHand.push({ suit, value });
+  }
+  updateHandDisplay();
+}
+
+// 顯示手牌
+function updateHandDisplay() {
+  const handCardsContainer = document.getElementById('hand-cards');
+  handCardsContainer.innerHTML = '';
+  playerHand.forEach((card, index) => {
+    const cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+    cardDiv.classList.add(card.suit);
+    cardDiv.innerHTML = `
+      <div class="top-left">${card.value}</div>
+      <div class="center">${card.value}</div>
+      <div class="bottom-right">${card.value}</div>
+    `;
+    cardDiv.onclick = () => selectCard(index);
+    handCardsContainer.appendChild(cardDiv);
+  });
+}
+
+// 選擇卡牌
+let selectedCards = [];
+function selectCard(index) {
+  const card = playerHand[index];
+  const cardDiv = document.querySelectorAll('#hand-cards .card')[index];
+  
+  // 如果已經選擇過該卡牌則取消選擇
+  if (selectedCards.includes(card)) {
+    selectedCards = selectedCards.filter(c => c !== card);
+    cardDiv.classList.remove('selected');
+  } else {
+    if (selectedCards.length < 2) {  // 只允許選擇兩張牌
+      selectedCards.push(card);
+      cardDiv.classList.add('selected');
+    }
+  }
+}
+
+// 出牌並補充新卡
+function playCards() {
+  if (selectedCards.length === 2) {
+    // 扣除體力
+    playerStamina -= 1;
+    opponentStamina -= 1;
+
+    // 清空選擇卡
+    selectedCards = [];
+
+    // 顯示新體力
+    document.getElementById('player-stamina').innerText = playerStamina;
+    document.getElementById('opponent-stamina').innerText = opponentStamina;
+
+    // 補充兩張卡
+    dealCards();
+  } else {
+    alert('請選擇兩張卡牌!');
+  }
+}
+
+// 初始發牌
+dealCards();
+
+// 設置出牌按鈕
+document.getElementById('submit-cards').addEventListener('click', playCards);
