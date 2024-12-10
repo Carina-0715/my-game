@@ -5,6 +5,81 @@ const rooms = [];
 const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 const chatContent = document.getElementById('chat-content');
+const chatTabs = document.querySelectorAll('.chat-tab'); // 所有標籤按鈕
+
+
+let currentChatType = 'public'; // 默認為公頻
+
+// 點擊標籤時切換顯示的聊天內容
+chatTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const chatType = tab.getAttribute('data-chat-type');
+    
+    // 更新標籤頁樣式
+    chatTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    
+    // 設置當前聊天類型
+    currentChatType = chatType;
+    
+    // 顯示對應的聊天內容
+    renderChatContent();
+  });
+});
+
+// 顯示聊天內容
+function renderChatContent() {
+  chatContent.innerHTML = ''; // 清空聊天內容
+  const messages = getMessagesByType(currentChatType); // 根據聊天類型過濾訊息
+  
+  // 根據類型展示訊息
+  messages.forEach(msg => {
+    const messageElem = document.createElement('div');
+    messageElem.classList.add('chat', getChatClass(msg.type)); // 根據類型添加類名
+    messageElem.textContent = `${msg.sender}: ${msg.message}`;
+    chatContent.appendChild(messageElem);
+  });
+}
+
+// 訊息類型過濾
+function getMessagesByType(chatType) {
+  // 這裡可以根據實際情況來過濾訊息
+  return messages.filter(msg => msg.type === chatType);
+}
+
+// 根據類型返回對應的 CSS 類名
+function getChatClass(type) {
+  switch(type) {
+    case 'public': return 'blue';
+    case 'private': return 'pink';
+    case 'game': return 'green';
+    case 'spectator': return 'orange';
+    default: return '';
+  }
+}
+
+// 假設有一組訊息（可以是從伺服器接收到的數據）
+const messages = [
+  { type: 'public', sender: 'player1', message: 'Hello everyone!' },
+  { type: 'private', sender: 'player1', message: 'Hi player2!' },
+  { type: 'game', sender: 'player1', message: 'Let\'s play!' },
+  { type: 'spectator', sender: 'player3', message: 'Watching the game.' }
+];
+
+// 當前發送訊息
+chatSend.addEventListener('click', () => {
+  const message = chatInput.value.trim();
+  if (message) {
+    // 假設發送的是公頻訊息
+    const newMessage = { type: 'public', sender: 'player1', message };
+    messages.push(newMessage); // 儲存訊息
+    chatInput.value = ''; // 清空輸入框
+    renderChatContent(); // 更新顯示
+  }
+});
+
+// 預設顯示公頻
+renderChatContent();
 
 chatSend.addEventListener('click', () => {
   const message = chatInput.value.trim();
