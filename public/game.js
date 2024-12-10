@@ -46,7 +46,9 @@ socket.on('roomCreated', (data) => {
     document.getElementById('createRoom').style.display = 'block';
   }
 });
-
+socket.on('roomListUpdated', (rooms) => {
+  renderRooms(Object.entries(rooms));
+});
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
 function renderRooms() {
