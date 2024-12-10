@@ -14,15 +14,6 @@
   background-color: #f9f9f9;
 }
 
-/* 玩家與對手樣式 */
-.player, .opponent {
-  font-weight: bold;
-  color: white;
-  background-color: blue;
-  padding: 5px;
-  border-radius: 50%;
-}
-
 /* 手牌 */
 #player-hand {
   margin: 20px;
@@ -41,37 +32,4 @@
 #hand-cards .selected {
   border-color: blue;
   font-weight: bold;
-}
-
-/* 移動方向按鈕 */
-#move-direction button {
-  margin: 5px;
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#move-direction button:hover {
-  background-color: #45a049;
-}
-
-/* 生命條 */
-.stamina-bar {
-  width: 200px;
-  height: 20px;
-  background-color: #dddddd;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-.stamina-bar span {
-  display: block;
-  height: 100%;
-  background-color: #4CAF50;
-  width: 100%; /* 初始寬度為 100% */
-  transition: width 0.5s ease;
 }

@@ -8,8 +8,7 @@ const io = socketIo(server);
 
 let rooms = {};  // 儲存房間資料
 
-// 伺服器靜態資源路徑設定
-app.use(express.static('public'));
+app.use(express.static('public'));  // 提供靜態資源
 
 io.on('connection', (socket) => {
   console.log('玩家已連接：' + socket.id);
@@ -19,7 +18,7 @@ io.on('connection', (socket) => {
     const roomID = Math.random().toString(36).substr(2, 6);  // 隨機生成房間ID
     rooms[roomID] = { players: [data.playerID], allowSpectators: data.allowSpectators, roomMode: data.roomMode };
     socket.emit('roomCreated', { success: true, roomID });
-    io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
+    io.emit('roomListUpdated', rooms);  // 更新房間列表
   });
 
   // 玩家加入房間
@@ -27,19 +26,19 @@ io.on('connection', (socket) => {
     const { playerID, roomID } = data;
     if (rooms[roomID]) {
       rooms[roomID].players.push(playerID);
-      socket.emit('playerJoined', { playerID, roomID });
-      io.emit('roomListUpdated', rooms);  // 更新房間列表
+      const opponentID = rooms[roomID].players.find(id => id !== playerID);
+      socket.emit('playerJoined', { playerID, opponentID });
+      io.emit('roomListUpdated', rooms);
     } else {
       socket.emit('error', { message: '房間不存在' });
     }
   });
 
   socket.on('disconnect', () => {
-    console.log('玩家已斷開連接');
+    console.log('玩家已離開：' + socket.id);
   });
 });
 
-// 伺服器監聽 3000 埠
 server.listen(3000, () => {
-  console.log('伺服器正在執行中，埠號為 3000');
+  console.log('伺服器正在運行，監聽端口 3000');
 });

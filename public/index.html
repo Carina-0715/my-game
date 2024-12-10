@@ -1,20 +1,125 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>多人遊戲大廳</title>
-  <link rel="stylesheet" href="styles.css"> <!-- 引入CSS檔案 -->
+  <title>多人對戰遊戲</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    #lobby {
+      text-align: center;
+      margin: 20px;
+    }
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 2px;
+      margin: 20px auto;
+      width: 90%;
+      text-align: center;
+    }
+    #game-board div {
+      border: 1px solid #cccccc;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    .player, .opponent {
+      font-weight: bold;
+      color: white;
+      background-color: blue;
+      padding: 5px;
+      border-radius: 50%;
+    }
+    #player-hand {
+      margin: 20px;
+      text-align: center;
+    }
+    #hand-cards div {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      background-color: #ffffff;
+      cursor: pointer;
+    }
+    #hand-cards .selected {
+      border-color: blue;
+      font-weight: bold;
+    }
+    #move-direction button {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #move-direction button:hover {
+      background-color: #45a049;
+    }
+    .cell {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #cccccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      position: relative;
+    }
+    .cell.player {
+      background-color: #a2d9ce;
+      border-radius: 50%;
+      animation: moveEffect 0.5s ease-in-out;
+    }
+    .cell.opponent {
+      background-color: #f5b041;
+      border-radius: 50%;
+      animation: moveEffect 0.5s ease-in-out;
+    }
+    @keyframes moveEffect {
+      from {
+        transform: scale(0.8);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+    .stamina-bar {
+      width: 200px;
+      height: 20px;
+      background-color: #dddddd;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    .stamina-bar span {
+      display: block;
+      height: 100%;
+      background-color: #4CAF50;
+      width: 100%;
+      transition: width 0.5s ease;
+    }
+  </style>
 </head>
 <body>
   <h1>遊戲大廳</h1>
   <div id="lobby">
     <input type="text" id="playerID" placeholder="輸入玩家ID">
-    <button id="createRoom">創建房間</button>
-    <button id="joinRoom">加入房間</button>
+    <button id="confirmPlayerID">確認玩家ID</button>
+    <button id="createRoom" disabled>創建房間</button>
+    <button id="joinRoom" disabled>加入房間</button>
     <div id="roomList"></div>
   </div>
-
+  
   <div id="game" style="display:none;">
     <h2>九九乘法表遊戲</h2>
     <div id="game-board"></div>
@@ -34,14 +139,14 @@
   </div>
 
   <div id="move-direction">
-    <h3>選擇移動方向</h3>
-    <button data-direction="up">向上</button>
-    <button data-direction="down">向下</button>
-    <button data-direction="left">向左</button>
-    <button data-direction="right">向右</button>
+    <h3>移動方向</h3>
+    <button data-direction="up">上</button>
+    <button data-direction="down">下</button>
+    <button data-direction="left">左</button>
+    <button data-direction="right">右</button>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script> <!-- 引入 Socket.io -->
-  <script src="game.js"></script> <!-- 引入遊戲邏輯的JavaScript -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
