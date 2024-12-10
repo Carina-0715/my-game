@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "一個簡單的多人遊戲大廳，包括房間管理和聊天功能。",
   "main": "server.js",
+  "dependencies": {
+    "socket.io-client": "^4.0.1"
   "scripts": {
     "start": "node server.js"
   },
+
   "keywords": [
     "game",
     "multiplayer",

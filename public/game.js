@@ -1,6 +1,5 @@
-import { io } from 'socket.io-client';
-const socket = io();  // 用來連接到後端的 socket.io 服務器
-
+// 連接 Socket.io 伺服器
+const socket = io();
 // 儲存房間資料
 const rooms = [];
 
@@ -47,64 +46,47 @@ socket.on('roomCreated', (data) => {
     document.getElementById('createRoom').style.display = 'block';
   }
 });
-console.log('Before rendering rooms:', rooms);
-renderRooms(rooms);
-console.log('After rendering rooms:', rooms);
 
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
-let previousRooms = [];
-
 function renderRooms(rooms) {
-  const roomListContainer = document.getElementById('room-list');
-
-  console.log('Before rendering rooms:', rooms);
-
-  // 如果房間資料為空，顯示 "No rooms available"
   if (!rooms || rooms.length === 0) {
-    console.log('No rooms available');
-    roomListContainer.innerHTML = '<p>No rooms available</p>';
-    return;
+    console.log('No rooms to display');
+    return; // 若無房間資料，則不執行渲染
   }
-
-  // 比較當前資料和上一輪渲染的資料
-  if (JSON.stringify(rooms) === JSON.stringify(previousRooms)) {
-    console.log('Rooms data has not changed, skipping render.');
-    return;  // 如果資料未改變，就跳過渲染
+    if (!Array.isArray(rooms)) {
+    console.error('房間資料格式錯誤:', rooms);
+    return; // 如果不是陣列，終止執行
   }
-
-  // 清空房間列表
-  roomListContainer.innerHTML = '';
-
+  roomListElement.innerHTML = ''; // 清空房間列表
   rooms.forEach(room => {
-    const roomElement = document.createElement('div');
-    roomElement.classList.add('room');
-    roomElement.innerHTML = `
+    const roomTile = document.createElement('div');
+    roomTile.classList.add('room-tile'); // 不設定顏色，等待動態添加
+    roomTile.innerHTML = `
       <div class="room-name">${room.name}</div>
-      <div class="room-status">${room.status}</div>
-      <div class="room-mode">${room.mode}</div>
-      <div class="spectator">${room.spectatorSetting ? 'Spectators allowed' : 'No spectators'}</div>
+      <div class="room-id">房間ID: ${room.id}</div>
+      <div class="room-players">玩家數: ${room.players.length}</div>
+      <div class="room-mode">模式: ${room.roomMode}</div>
+      <div class="room-spectators">觀戰: ${room.allowSpectators ? '允許' : '禁止'}</div>
+      <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
     `;
-    roomListContainer.appendChild(roomElement);
+  roomTile.classList.add(room.status || 'waiting'); // 如果沒有狀態，預設為 'waiting'
+   console.log('Room status:', room.status);
+roomTile.classList.add(room.status); // 根據 status 動態加樣式
+ console.log('Rendering rooms:', rooms); // 查看房間資料
+
+    // 添加點擊事件，點擊房間後自動加入並進入遊戲畫面
+    roomTile.addEventListener('click', () => {
+      socket.emit('joinRoom', { playerID, roomID: room.id });
+      // 加入房間後隱藏大廳，顯示遊戲畫面
+      document.getElementById('lobby').style.display = 'none';  // 隱藏大廳
+      document.getElementById('lobby-title').style.display = 'none';  // 隱藏標題
+      document.getElementById('game-board-title').style.display = 'none';  // 顯示遊戲畫面
+    });
+ console.log('Rendering rooms:', rooms);  // 打印房間資料
+    roomListElement.appendChild(roomTile);
   });
-
-  // 更新上一輪的房間資料
-  previousRooms = rooms;
-
-  console.log('After rendering rooms:', rooms);
 }
-
-
-// 假設資料來自某個函數
-function fetchRooms() {
-  socket.emit('getRooms');
-}
-
-socket.on('roomsData', (data) => {
-  console.log('Received rooms data:', data);  // 確認資料是否正確接收
-  renderRooms(data);  // 資料更新後才調用渲染函數
-});
-
 socket.on('roomsList', (rooms) => {
    console.log('Received rooms data:', rooms);  // 打印從伺服器接收到的房間資料
   if (Array.isArray(rooms) && rooms.length > 0) {
@@ -113,11 +95,6 @@ socket.on('roomsList', (rooms) => {
     console.log('No rooms available');
   }
 });
-
-console.log('Before rendering rooms:', rooms);
-renderRooms(rooms);
-console.log('After rendering rooms:', rooms);
-
 // 儲存玩家ID
 let playerID = '';
 
