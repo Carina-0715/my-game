@@ -50,49 +50,52 @@ socket.on('roomCreated', (data) => {
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
 function renderRooms(rooms) {
-  const roomListContainer = document.getElementById('room-list');  // 假設這是顯示房間的容器
+  const roomListContainer = document.getElementById('room-list');
+  console.log('Rendering rooms:', rooms);
 
-  console.log('Rendering rooms:', rooms);  // 打印房間資料
+  // 防錯處理，確保 rooms 是一個有效的陣列
+  if (!Array.isArray(rooms)) {
+    console.error('Expected an array of rooms, but got:', rooms);
+    return;  // 如果不是陣列，則不繼續執行
+  }
 
   // 確保容器清空
   roomListContainer.innerHTML = '';
+
   rooms.forEach(room => {
-    const roomTile = document.createElement('div');
-    roomTile.classList.add('room'); // 不設定顏色，等待動態添加
-    roomTile.innerHTML = `
+    console.log('Rendering room:', room);
+
+    // 確保房間物件有正確的屬性
+    if (!room.name || !room.status || !room.mode || room.spectatorSetting === undefined) {
+      console.error('Missing required room properties:', room);
+      return;  // 如果缺少必要屬性，跳過該房間
+    }
+
+    const roomElement = document.createElement('div');
+    roomElement.classList.add('room');
+    roomElement.innerHTML = `
       <div class="room-name">${room.name}</div>
-      <div class="room-id">房間ID: ${room.id}</div>
-      <div class="room-players">玩家數: ${room.players.length}</div>
-      <div class="room-mode">模式: ${room.roomMode}</div>
-      <div class="room-spectators">觀戰: ${room.allowSpectators ? '允許' : '禁止'}</div>
-      <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
+      <div class="room-status">${room.status}</div>
+      <div class="room-mode">${room.mode}</div>
+      <div class="spectator">${room.spectatorSetting ? 'Spectators allowed' : 'No spectators'}</div>
     `;
-  roomTile.classList.add(room.status || 'waiting'); // 如果沒有狀態，預設為 'waiting'
-   console.log('Room status:', room.status);
-roomTile.classList.add(room.status); // 根據 status 動態加樣式
- console.log('Rendering rooms:', rooms); // 查看房間資料
 
-    // 添加點擊事件，點擊房間後自動加入並進入遊戲畫面
-    roomTile.addEventListener('click', () => {
-      socket.emit('joinRoom', { playerID, roomID: room.id });
-      // 加入房間後隱藏大廳，顯示遊戲畫面
-      document.getElementById('lobby').style.display = 'none';  // 隱藏大廳
-      document.getElementById('lobby-title').style.display = 'none';  // 隱藏標題
-      document.getElementById('game-board-title').style.display = 'none';  // 顯示遊戲畫面
-    });
-
-    roomListElement.appendChild(roomTile);
+    roomListContainer.appendChild(roomElement);
   });
 }
-socket.on('roomsList', (rooms) => {
-  console.log('Received rooms data:', rooms);  // 確認是否收到資料
-  if (Array.isArray(rooms) && rooms.length > 0) {
-    renderRooms(rooms);  // 呼叫渲染函數
-  } else {
-    console.log('No rooms available');  // 如果沒有房間資料，打印提示
-  }
+socket.on('roomsData', (rooms) => {
+  console.log('Received rooms data:', rooms);  // 檢查伺服器返回的資料
+  renderRooms(rooms);  // 渲染房間
 });
 
+socket.on('roomsList', (rooms) => {
+   console.log('Received rooms data:', rooms);  // 打印從伺服器接收到的房間資料
+  if (Array.isArray(rooms) && rooms.length > 0) {
+    renderRooms(rooms);
+  } else {
+    console.log('No rooms available');
+  }
+});
 // 儲存玩家ID
 let playerID = '';
 
