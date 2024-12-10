@@ -1,196 +1,49 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>遊戲大廳</title>
-  <style>
-    /* 樣式部分 */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-
-    #lobby {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      padding: 20px;
-    }
-
-    h1, h2 {
-      text-align: center;
-    }
-
-    #controls {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      background-color: #0056b3;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #007BFF;
-    }
-
-    #playerIdContainer {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    #chatContainer {
-      height: 300px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-      background-color: #f9f9f9;
-      border-radius: 5px;
-    }
-
-    #chatMessages {
-      display: flex;
-      flex-direction: column;
-    }
-
-    #messageInputContainer {
-      display: flex;
-      gap: 10px;
-    }
-
-    #messageInput {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-  </style>
-  <script src="/socket.io/socket.io.js"></script>
-  <script defer src="client.js"></script>
+  <title>多人對戰遊戲</title>
 </head>
 <body>
+  <h1>遊戲大廳</h1>
   <div id="lobby">
-    <h1>遊戲大廳</h1>
-<div id="player-id-section">
-    <h3>當前玩家ID: <span id="player-id">尚未設定</span></h3>
-    <input type="text" id="player-id-input" placeholder="請輸入玩家ID">
-    <button id="set-player-id">設置玩家ID</button>
+    <input type="text" id="playerID" placeholder="輸入玩家ID">
+    <button id="createRoom">創建房間</button>
+    <button id="joinRoom">加入房間</button>
+    <div id="roomList"></div>
   </div>
-
-  <div id="room-section" style="display:none;">
-    <h3>當前房間ID: <span id="room-id">尚未加入任何房間</span></h3>
-    <button id="join-room">加入房間</button>
-    <button id="create-room">創建房間</button>
-  </div>
-      <script>
-    const socket = io();
-    let playerId = "";  // 用於存儲玩家ID
-    let roomId = "";    // 用於存儲當前房間ID
-
-    // 設置玩家ID的處理邏輯
-    document.getElementById('set-player-id').addEventListener('click', () => {
-      const inputId = document.getElementById('player-id-input').value.trim();
-      if (inputId) {
-        playerId = inputId;
-        document.getElementById('player-id').innerText = playerId;
-        document.getElementById('player-id-input').disabled = true;
-        document.getElementById('set-player-id').disabled = true;
-        document.getElementById('room-section').style.display = 'block';
-        console.log('玩家ID設置為:', playerId);
-      } else {
-        alert("請輸入有效的玩家ID！");
-      }
-    });
-
-    // 創建房間
-    document.getElementById('create-room').addEventListener('click', () => {
-      if (!playerId) {
-        alert("請先設置玩家ID！");
-        return;
-      }
-
-      const roomName = prompt("請輸入房間名稱");
-      if (roomName) {
-        socket.emit('createRoom', { roomName, playerId, inviteOnly: false, spectatorsAllowed: true }, (response) => {
-          if (response.success) {
-            roomId = response.roomId;
-            document.getElementById('room-id').innerText = roomId;
-            alert(`房間創建成功，房間ID: ${roomId}`);
-          } else {
-            alert("創建房間失敗：" + response.message);
-          }
-        });
-      }
-    });
-
-    // 加入房間
-    document.getElementById('join-room').addEventListener('click', () => {
-      if (!playerId) {
-        alert("請先設置玩家ID！");
-        return;
-      }
-
-      const inputRoomId = prompt("請輸入房間ID");
-      if (inputRoomId) {
-        socket.emit('joinRoom', { roomId: inputRoomId, playerId }, (response) => {
-          if (response.success) {
-            roomId = inputRoomId;
-            document.getElementById('room-id').innerText = roomId;
-            alert(`成功加入房間 ${roomId}`);
-          } else {
-            alert("加入房間失敗：" + response.message);
-          }
-        });
-      }
-    });
-
-  </script>
-  <h3>創建房間</h3>
-  <div id="roomList">
-  <h2>房間列表</h2>
-  <!-- 動態更新房間資料 -->
+<div id="player-hand">
+  <h3>你的手牌</h3>
+  <div id="hand-cards"></div>
+  <button id="submit-cards">確認出牌</button>
 </div>
-  <label>
-    房間名稱：
-    <input id="roomNameInput" type="text" placeholder="輸入房間名稱">
-  </label>
-  <br>
-  <label>
-    <input id="allowSpectators" type="checkbox"> 允許觀戰
-  </label>
-  <br>
-  <label>
-    <input id="inviteOnly" type="checkbox"> 僅限邀請
-  </label>
-  <br>
-  <button id="confirmCreateRoom">確認創建</button>
-  <button id="cancelCreateRoom">取消</button>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
 
-    <!-- 聊天區 -->
-    <div id="chat">
-      <h2>公頻聊天</h2>
-      <div id="chatContainer">
-        <div id="chatMessages"></div>
-      </div>
-      <div id="messageInputContainer">
-        <input id="messageInput" type="text" placeholder="輸入消息">
-        <button id="sendButton">發送</button>
-      </div>
-    </div>
-  </div>
+    // 創建房間邏輯
+    document.getElementById('createRoom').addEventListener('click', () => {
+      const playerID = document.getElementById('playerID').value;
+      socket.emit('createRoom', { playerID, roomMode: 'public', allowSpectators: true });
+    });
+
+    // 加入房間邏輯
+    document.getElementById('joinRoom').addEventListener('click', () => {
+      const playerID = document.getElementById('playerID').value;
+      const roomID = prompt('輸入房間ID:');
+      socket.emit('joinRoom', { playerID, roomID });
+    });
+
+    // 房間創建回應
+    socket.on('roomCreated', (data) => {
+      if (data.success) alert(`房間創建成功！房間ID: ${data.roomID}`);
+    });
+
+    // 房間加入回應
+    socket.on('playerJoined', (data) => {
+      alert(`玩家 ${data.playerID} 加入了房間`);
+    });
+  </script>
 </body>
 </html>
