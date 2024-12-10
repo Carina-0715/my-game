@@ -46,31 +46,26 @@ socket.on('roomCreated', (data) => {
     document.getElementById('createRoom').style.display = 'block';
   }
 });
+console.log('Before rendering rooms:', rooms);
+renderRooms(rooms);
+console.log('After rendering rooms:', rooms);
 
 // 渲染房間列表
 const roomListElement = document.getElementById('roomList');
 function renderRooms(rooms) {
   const roomListContainer = document.getElementById('room-list');
-  console.log('Rendering rooms:', rooms);
-
-  // 防錯處理，確保 rooms 是一個有效的陣列
-  if (!Array.isArray(rooms)) {
-    console.error('Expected an array of rooms, but got:', rooms);
-    return;  // 如果不是陣列，則不繼續執行
+  
+  // 確保 rooms 資料有效
+  if (!Array.isArray(rooms) || rooms.length === 0) {
+    console.log('No rooms available');
+    roomListContainer.innerHTML = '<p>No rooms available</p>';  // 顯示提示訊息
+    return;
   }
 
-  // 確保容器清空
-  roomListContainer.innerHTML = '';
+  console.log('Rendering rooms:', rooms);  // 打印收到的房間資料
+  roomListContainer.innerHTML = '';  // 清空房間列表
 
   rooms.forEach(room => {
-    console.log('Rendering room:', room);
-
-    // 確保房間物件有正確的屬性
-    if (!room.name || !room.status || !room.mode || room.spectatorSetting === undefined) {
-      console.error('Missing required room properties:', room);
-      return;  // 如果缺少必要屬性，跳過該房間
-    }
-
     const roomElement = document.createElement('div');
     roomElement.classList.add('room');
     roomElement.innerHTML = `
@@ -79,13 +74,21 @@ function renderRooms(rooms) {
       <div class="room-mode">${room.mode}</div>
       <div class="spectator">${room.spectatorSetting ? 'Spectators allowed' : 'No spectators'}</div>
     `;
-
     roomListContainer.appendChild(roomElement);
+    roomListContainer.innerHTML = '';  // 清空容器
+
   });
 }
-socket.on('roomsData', (rooms) => {
-  console.log('Received rooms data:', rooms);  // 檢查伺服器返回的資料
-  renderRooms(rooms);  // 渲染房間
+
+
+// 假設資料來自某個函數
+function fetchRooms() {
+  socket.emit('getRooms');
+}
+
+socket.on('roomsData', (data) => {
+  console.log('Received rooms data:', data);  // 確認資料是否正確接收
+  renderRooms(data);  // 資料更新後才調用渲染函數
 });
 
 socket.on('roomsList', (rooms) => {
@@ -96,6 +99,11 @@ socket.on('roomsList', (rooms) => {
     console.log('No rooms available');
   }
 });
+
+console.log('Before rendering rooms:', rooms);
+renderRooms(rooms);
+console.log('After rendering rooms:', rooms);
+
 // 儲存玩家ID
 let playerID = '';
 
