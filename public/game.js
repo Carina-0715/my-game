@@ -11,45 +11,16 @@ document.getElementById('createRoom').addEventListener('click', () => {
   document.getElementById('createRoom').style.display = 'none';
 });
 
-// 玩家加入房間
-socket.on('joinRoom', (data) => {
-  const { playerID, roomID } = data;
-
-  if (rooms[roomID]) {
-    if (!rooms[roomID].players.includes(playerID)) {
-      rooms[roomID].players.push(playerID); // 將玩家加入該房間
-    }
-    socket.join(roomID); // 玩家加入房間
-
-    // 廣播該房間的玩家列表
-    io.to(roomID).emit('updateRoomPlayers', rooms[roomID].players);
-
-    // 回傳玩家成功加入房間的確認
-    socket.emit('playerJoined', { playerID, roomID });
-  } else {
-    socket.emit('error', { message: '房間不存在' });
+// 創建房間
+document.getElementById('create-room-btn').addEventListener('click', () => {
+  const roomID = prompt('輸入房間名稱:');
+  const roomMode = document.getElementById('room-mode').value;  // 獲取選擇的房間模式
+  const spectatorSetting = document.getElementById('spectator-setting').value;  // 獲取選擇的觀戰功能 
+  if (roomID) {
+    // 發送創建房間請求到伺服器
+    socket.emit('createRoom', { playerID, roomID, roomMode, spectatorSetting });
   }
 });
-// 廣播房間列表更新
-function updateRoomList() {
-  io.emit('roomListUpdated', rooms); // 向所有玩家廣播房間列表
-}
-
-// 創建房間
-socket.on('createRoom', (data) => {
-  const roomID = Math.random().toString(36).substr(2, 6);  // 隨機生成房間ID
-  rooms[roomID] = { 
-    players: [data.playerID], 
-    allowSpectators: data.allowSpectators, 
-    roomMode: data.roomMode 
-  };
-  
-  socket.join(roomID); // 讓創建者加入該房間
-  socket.emit('roomCreated', { success: true, roomID });
-  
-  updateRoomList(); // 更新房間列表
-});
-
 
 
 
