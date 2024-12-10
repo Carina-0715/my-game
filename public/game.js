@@ -33,6 +33,7 @@ document.getElementById('createRoom').addEventListener('click', () => {
 // 創建房間
 document.getElementById('create-room-btn').addEventListener('click', () => {
   const roomID = prompt('輸入房間ID:');
+  const generateRoomName = (roomID) => `房間 ${roomID}`;
   const roomMode = document.getElementById('room-mode').value;  // 獲取選擇的房間模式
   const spectatorSetting = document.getElementById('spectator-setting').value;  // 獲取選擇的觀戰功能 
   if (roomID) {
