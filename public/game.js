@@ -2,6 +2,25 @@
 const socket = io();
 // 儲存房間資料
 const rooms = [];
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+const chatContent = document.getElementById('chat-content');
+
+chatSend.addEventListener('click', () => {
+  const message = chatInput.value.trim();
+  if (message) {
+    socket.emit('sendMessage', { playerID: playerIDInput.value, message });
+    chatInput.value = '';
+  }
+});
+
+socket.on('receiveMessage', (data) => {
+  const newMessage = document.createElement('div');
+  newMessage.className = `chat ${data.type}`;
+  newMessage.textContent = `${data.sender}: ${data.message}`;
+  chatContent.appendChild(newMessage);
+  chatContent.scrollTop = chatContent.scrollHeight; // 滾動到底部
+});
 
 // 顯示創建房間界面
 document.getElementById('createRoom').addEventListener('click', () => {
@@ -23,6 +42,15 @@ document.getElementById('create-room-btn').addEventListener('click', () => {
 });
 
 
+const playerIDInput = document.getElementById('playerID');
+const createRoomBtn = document.getElementById('createRoom');
+const joinRoomBtn = document.getElementById('joinRoom');
+
+playerIDInput.addEventListener('input', () => {
+  const playerID = playerIDInput.value.trim();
+  createRoomBtn.disabled = !playerID;
+  joinRoomBtn.disabled = !playerID;
+});
 
 
 // 接收房間創建回應
@@ -57,8 +85,12 @@ function renderRooms() {
     const roomTile = document.createElement('div');
     roomTile.classList.add('room-tile'); // 不設定顏色，等待動態添加
     roomTile.innerHTML = `
-      <div class="room-name">${room.name}</div>
-      <div class="room-status">${room.status === 'available' ? '空閒' : room.status === 'full' ? '已滿' : '等待中'}</div>
+      <div class="room-name">房間名稱: ${room.name}</div>
+      <div class="room-id">房間 ID: ${room.id}</div>
+      <div class="room-players">玩家數: ${room.players} / ${room.maxPlayers}</div>
+      <div class="room-mode">模式: ${room.mode}</div>
+      <div class="room-spectators">觀戰: ${room.spectatorsAllowed ? '允許' : '禁止'}</div>
+      <div class="room-status">${room.status === 'available' ? '空閒' : '已滿'}</div>
     `;
     roomTile.classList.add(room.status);  // 根據狀態動態添加顏色樣式
     
@@ -118,6 +150,9 @@ socket.on('playerJoined', (data) => {
   startGame(data.roomID);
 });
 
+
+
+
 // 開始遊戲
 function startGame(roomID) {
   document.getElementById('lobby').style.display = 'none';
@@ -128,6 +163,10 @@ function startGame(roomID) {
   generateMultiplicationTable();
   socket.emit('startGame', { roomID });
 }
+
+
+
+
 
 // 隨機圖示列表
 const icons = ['🐶', '🐱', '🦊', '🐯', '🦁', '🐺', '🐭', '🐹', '🐰', '🐻‍❄️', '🐨', '🐔', '🐧', '🦉', '🐸', '🐳', '🦀', '🦞', '🦈', '🐙', '🦭', '🐣', '🪼', '🦖', '🐲', '🦕', '🐞', '🐜', '🐝', '🦗', '☃️', '🌞', '🌟', '🌩️', '🌈', '🍓', '🍉', '🍎', '🍊', '🍒', '🥝', '🍍', '🍌', '🍇', '🌶️'];
