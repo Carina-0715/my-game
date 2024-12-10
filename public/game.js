@@ -81,13 +81,21 @@ function generateMultiplicationTable() {
   const gameBoard = document.getElementById('game-board');
   gameBoard.innerHTML = ''; // 清空之前的內容
 
+  const seenNumbers = new Set(); // 用來儲存已經顯示過的數字
+
   // 創建 9x9 乘法表格
   for (let i = 1; i <= 9; i++) {
     for (let j = 1; j <= 9; j++) {
-      const cell = document.createElement('div');
-      cell.classList.add('cell');
-      cell.textContent = i * j; // 顯示乘法表的數字
-      gameBoard.appendChild(cell);
+      const num = i * j; // 計算乘法表的數字
+
+      // 如果這個數字已經出現過，則跳過
+      if (!seenNumbers.has(num)) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.textContent = num; // 顯示乘法表的數字
+        gameBoard.appendChild(cell);
+        seenNumbers.add(num); // 將這個數字加入已顯示數字的集合
+      }
     }
   }
 
