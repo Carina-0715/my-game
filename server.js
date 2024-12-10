@@ -7,35 +7,31 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 let players = {};  // 儲存已註冊的玩家ID
+const rooms = {};   // 儲存房間資料
 
+// 伺服器靜態資源路徑設定
+app.use(express.static('public'));
 
-const rooms = {
-  // 範例結構
-  // roomId: { players: [], messages: [] }
-};
+// 廣播房間狀態
 function broadcastRoomState(roomId) {
   if (rooms[roomId]) {
-    // 廣播該房間的玩家列表和對話框訊息
     io.to(roomId).emit("updateRoomState", {
       players: rooms[roomId].players,
       messages: rooms[roomId].messages,
     });
   }
 }
-// 伺服器靜態資源路徑設定
-app.use(express.static('public'));
 
+// 監聽玩家連接
 io.on('connection', (socket) => {
   console.log('玩家已連接：' + socket.id);
 
   // 玩家ID唯一性檢查
   socket.on('checkPlayerID', (playerID) => {
     if (players[playerID]) {
-      // 如果玩家ID已存在
       socket.emit('checkPlayerIDResult', { success: false });
     } else {
-      // 玩家ID可用
-      players[playerID] = true;  // 將玩家ID加入已註冊的列表
+      players[playerID] = true;  // 註冊玩家
       socket.emit('checkPlayerIDResult', { success: true, playerID });
     }
   });
@@ -43,46 +39,45 @@ io.on('connection', (socket) => {
   // 創建房間
   socket.on('createRoom', (data) => {
     const roomID = Math.random().toString(36).substr(2, 6);  // 隨機生成房間ID
-    rooms[roomID] = { players: [data.playerID], allowSpectators: data.allowSpectators, roomMode: data.roomMode };
+    rooms[roomID] = { 
+      players: [data.playerID], 
+      allowSpectators: data.allowSpectators, 
+      roomMode: data.roomMode,
+      messages: [] 
+    };
     socket.emit('roomCreated', { success: true, roomID });
     io.emit('roomListUpdated', rooms);  // 更新房間列表給所有玩家
+    socket.join(roomID);  // 玩家加入房間
+    broadcastRoomState(roomID); // 廣播房間狀態
   });
-  socket.on("createRoom", (data) => {
-  const { roomID, playerId } = data;
-  if (!rooms[roomID]) {
-    rooms[roomID] = { players: [playerId], messages: [] };
-    socket.join(roomID);
-    io.emit("updateRoomList", rooms); // 廣播房間列表
-    broadcastRoomState(roomID); // 同步房間狀態
-  }
-});
 
   // 玩家加入房間
   socket.on('joinRoom', (data) => {
     const { playerID, roomID } = data;
-    if (rooms[roomID]) {
+    if (rooms[roomID] && !rooms[roomID].players.includes(playerID)) {
       rooms[roomID].players.push(playerID);
+      socket.join(roomID);
       socket.emit('playerJoined', { playerID, roomID });
       io.emit('roomListUpdated', rooms);  // 更新房間列表
-      
+      broadcastRoomState(roomID); // 廣播房間狀態
     } else {
-      socket.emit('error', { message: '房間不存在' });
+      socket.emit('error', { message: '房間不存在或已滿' });
     }
   });
-socket.on("joinRoom", (data) => {
-  const { roomID, playerID } = data;
-  if (rooms[roomID] && !rooms[roomID].players.includes(playerID)) {
-    rooms[roomID].players.push(playerID);
-    socket.join(roomID);
-    broadcastRoomState(roomID); // 同步房間狀態
-  }
-});
+
+  // 開始遊戲
+  socket.on('startGame', (data) => {
+    const { roomID } = data;
+    // 遊戲邏輯可以在這裡進行
+    io.to(roomID).emit('gameStarted', { roomID });
+  });
+
+  // 玩家斷開連接
   socket.on('disconnect', () => {
     console.log('玩家已斷開連接');
   });
 });
 
-  
 // 伺服器監聽 3000 埠
 server.listen(3000, () => {
   console.log('伺服器正在執行中，埠號為 3000');
