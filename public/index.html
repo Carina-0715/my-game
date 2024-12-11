@@ -338,18 +338,17 @@
   <button onclick="selectIcon('🌶️')">🌶️</button>
 </div>
 <div id="chat-box">
-  <!-- 標籤選擇區 -->
-  <div id="chat-tabs">
-    <button class="chat-tab" data-chat-type="public">公頻對話</button>
-    <button class="chat-tab" data-chat-type="private">私密對話</button>
-    <button class="chat-tab" data-chat-type="game">對戰對話</button>
-    <button class="chat-tab" data-chat-type="spectator">觀戰對話</button>
+  <div class="tabs">
+    <button id="public-tab" class="tab">公頻對話</button>
+    <button id="private-tab" class="tab">私密對話</button>
+    <button id="game-tab" class="tab">對戰對話</button>
+    <button id="spectator-tab" class="tab">觀戰對話</button>
   </div>
-  
-  <!-- 顯示不同類型的聊天內容 -->
+  <div id="public-chat" class="chat blue">公頻對話</div>
+  <div id="private-chat" class="chat pink">私密對話</div>
+  <div id="game-chat" class="chat green">對戰對話</div>
+  <div id="spectator-chat" class="chat orange">觀戰對話</div>
   <div id="chat-content"></div>
-
-  <!-- 訊息輸入區 -->
   <input id="chat-input" type="text" placeholder="輸入訊息..." style="width: 80%; margin: 10px;">
   <button id="chat-send" style="width: 15%;">發送</button>
 </div>

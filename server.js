@@ -6,8 +6,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+const PORT = 3000;
 
-let players = {};  // 儲存已註冊的玩家ID
+// 儲存玩家資料
+const players = {};
 
 
 const rooms = {
@@ -23,6 +25,79 @@ function broadcastRoomState(roomId) {
     });
   }
 }
+// 當玩家連接到伺服器
+io.on('connection', (socket) => {
+  console.log(`玩家已連接：${socket.id}`);
+
+  // 接收玩家加入遊戲時的資料
+  socket.on('registerPlayer', (playerID) => {
+    players[socket.id] = playerID; // 以 socket.id 為鍵，儲存 playerID
+    console.log(`玩家已註冊：${playerID}`);
+  });
+
+  // 接收並處理聊天訊息
+  socket.on('sendMessage', (data) => {
+    const { playerID, message } = data;
+
+    if (!players[socket.id]) {
+      console.log(`未找到玩家：${playerID}`);
+      return;
+    }
+
+    console.log(`收到訊息 - 來自玩家：${playerID}，訊息內容：${message}`);
+
+    // 判斷訊息類型並進行廣播
+    switch (data.type) {
+      case 'public': // 公頻訊息
+        io.emit('receiveMessage', {
+          type: 'public',
+          sender: playerID,
+          message: message,
+        });
+        break;
+
+      case 'private': // 私密訊息
+        const recipientSocketID = Object.keys(players).find(
+          (id) => players[id] === data.recipient
+        );
+        if (recipientSocketID) {
+          io.to(recipientSocketID).emit('receiveMessage', {
+            type: 'private',
+            sender: playerID,
+            message: message,
+          });
+        } else {
+          console.log(`找不到目標玩家：${data.recipient}`);
+        }
+        break;
+
+      case 'game': // 對戰聊天
+        io.emit('receiveMessage', {
+          type: 'game',
+          sender: playerID,
+          message: message,
+        });
+        break;
+
+      case 'spectator': // 觀戰聊天
+        io.emit('receiveMessage', {
+          type: 'spectator',
+          sender: playerID,
+          message: message,
+        });
+        break;
+
+      default:
+        console.log('未知的訊息類型');
+    }
+  });
+
+  // 當玩家斷開連接
+  socket.on('disconnect', () => {
+    console.log(`玩家已斷開連接：${socket.id}`);
+    delete players[socket.id]; // 從玩家列表中移除
+  });
+});
 
 // 伺服器靜態資源路徑設定
 app.use(express.static('public'));
@@ -128,7 +203,7 @@ socket.on("joinRoom", (data) => {
 });
 
   
-// 啟動服務器
-server.listen(3000, () => {
-  console.log('Server is running on port 3000');
+// 啟動伺服器
+server.listen(PORT, () => {
+  console.log(`伺服器已啟動，監聽埠口 ${PORT}`);
 });

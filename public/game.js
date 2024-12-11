@@ -6,6 +6,36 @@ const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 const chatContent = document.getElementById('chat-content');
 
+// 頁籤元素
+const publicTab = document.getElementById('public-tab');
+const privateTab = document.getElementById('private-tab');
+const gameTab = document.getElementById('game-tab');
+const spectatorTab = document.getElementById('spectator-tab');
+
+// 當前顯示的頁籤
+let currentTab = 'public-chat'; // 預設為公頻對話
+
+// 切換頁籤
+function switchTab(tabId) {
+  // 隱藏所有聊天區域
+  const allChats = document.querySelectorAll('.chat');
+  allChats.forEach(chat => chat.style.display = 'none');
+  
+  // 顯示選中的頁籤
+  document.getElementById(tabId).style.display = 'block';
+  currentTab = tabId;
+}
+
+// 設定初始頁籤顯示
+switchTab(currentTab);
+
+// 頁籤點擊事件
+publicTab.addEventListener('click', () => switchTab('public-chat'));
+privateTab.addEventListener('click', () => switchTab('private-chat'));
+gameTab.addEventListener('click', () => switchTab('game-chat'));
+spectatorTab.addEventListener('click', () => switchTab('spectator-chat'));
+
+
 chatSend.addEventListener('click', () => {
   const message = chatInput.value.trim();
   if (message) {
@@ -19,6 +49,18 @@ socket.on('receiveMessage', (data) => {
   newMessage.className = `chat ${data.type}`;
   newMessage.textContent = `${data.sender}: ${data.message}`;
   chatContent.appendChild(newMessage);
+
+  // 根據選中的頁籤顯示訊息
+  if (currentTab === 'public-chat' && data.type === 'public') {
+    chatContent.appendChild(newMessage);
+  } else if (currentTab === 'private-chat' && data.type === 'private') {
+    chatContent.appendChild(newMessage);
+  } else if (currentTab === 'game-chat' && data.type === 'game') {
+    chatContent.appendChild(newMessage);
+  } else if (currentTab === 'spectator-chat' && data.type === 'spectator') {
+    chatContent.appendChild(newMessage);
+  }
+  
   chatContent.scrollTop = chatContent.scrollHeight; // 滾動到底部
 });
 
