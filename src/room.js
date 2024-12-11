@@ -27,3 +27,13 @@ function handleRoomSocket(io, socket) {
 }
 
 module.exports = { handleRoomSocket };
+// room.js
+const { emitMove } = require('./socket');
+
+document.getElementById('move-button').addEventListener('click', () => {
+  const roomID = 'room1'; // 假設房間ID
+  const playerID = 'player1'; // 假設玩家ID
+  const move = 'card1'; // 假設卡牌移動
+
+  emitMove(roomID, playerID, move);
+});
