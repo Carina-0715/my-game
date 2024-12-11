@@ -37,3 +37,8 @@ document.getElementById('move-button').addEventListener('click', () => {
 
   emitMove(roomID, playerID, move);
 });
+socket.on('gameUpdate', (gameState) => {
+  document.getElementById('current-turn').textContent = gameState.turn;
+  document.getElementById('player1-stamina').textContent = gameState.stamina['player1'];
+  document.getElementById('player2-stamina').textContent = gameState.stamina['player2'];
+});
