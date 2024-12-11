@@ -1,95 +1,37 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>遊戲房間</title>
-  <link rel="stylesheet" href="room.css">
+  <title>多人對戰遊戲 - 房間</title>
+  <link rel="stylesheet" href="room.css"> <!-- 請將相關 CSS 移到 room.css -->
 </head>
 <body>
+  <h1>房間畫面</h1>
   <div id="game-board">
-    <div id="player1" class="player">玩家 1</div>
-    <div id="player2" class="player">玩家 2</div>
+    <!-- 遊戲板格子 -->
   </div>
 
-  <div id="game-info">
-    <p>當前回合：<span id="current-turn">1</span></p>
-    <p>玩家耐力：<span id="player1-stamina">20</span> / <span id="player2-stamina">20</span></p>
+  <div id="player-info">
+    <p>玩家資訊區塊</p>
   </div>
 
-  <button id="move-button">移動</button>
+  <div id="player-hand">
+    <!-- 撲克牌區塊 -->
+  </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="room.js"></script>
+  <div id="chat-box">
+    <div class="tabs">
+      <button id="public-tab" class="tab">公頻對話</button>
+      <button id="private-tab" class="tab">私頻對話</button>
+      <button id="game-tab" class="tab">遊戲對話</button>
+    </div>
+    <div id="chat-content">
+      <!-- 顯示對話內容 -->
+    </div>
+    <textarea id="chat-input" placeholder="輸入訊息..."></textarea>
+    <button id="chat-send">發送</button>
+  </div>
+
+  <script src="room.js"></script> <!-- 移到 room.js -->
 </body>
 </html>
-<div id="chat-box">
-  <!-- 公共聊天室 -->
-  <div id="public-chat" class="chat">
-    <h3>公共聊天室</h3>
-    <div id="public-messages"></div>
-    <input id="public-message-input" type="text" placeholder="輸入訊息...">
-    <button onclick="sendPublicMessage()">發送</button>
-  </div>
-
-  <!-- 私密聊天室 -->
-  <div id="private-chat" class="chat">
-    <h3>私密聊天室</h3>
-    <div id="private-messages"></div>
-    <input id="private-message-input" type="text" placeholder="輸入私密訊息...">
-    <button onclick="sendPrivateMessage()">發送</button>
-  </div>
-
-  <!-- 觀戰者聊天室 -->
-  <div id="spectator-chat" class="chat">
-    <h3>觀戰者聊天室</h3>
-    <div id="spectator-messages"></div>
-    <input id="spectator-message-input" type="text" placeholder="輸入訊息...">
-    <button onclick="sendSpectatorMessage()">發送</button>
-  </div>
-</div>
-
-<script>
-  // 發送公共訊息
-  function sendPublicMessage() {
-    const message = document.getElementById('public-message-input').value;
-    socket.emit('sendPublicMessage', playerID, message);
-  }
-
-  // 發送私密訊息
-  function sendPrivateMessage() {
-    const toPlayerID = document.getElementById('private-player-id').value;  // 假設玩家選擇私密聊天對象
-    const message = document.getElementById('private-message-input').value;
-    socket.emit('sendPrivateMessage', playerID, toPlayerID, message);
-  }
-
-  // 發送觀戰者訊息
-  function sendSpectatorMessage() {
-    const message = document.getElementById('spectator-message-input').value;
-    socket.emit('sendSpectatorMessage', spectatorID, message);
-  }
-
-  // 接收公共訊息
-  socket.on('publicMessage', (data) => {
-    const { playerID, message } = data;
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = `${playerID}: ${message}`;
-    document.getElementById('public-messages').appendChild(messageDiv);
-  });
-
-  // 接收私密訊息
-  socket.on('privateMessage', (data) => {
-    const { fromPlayerID, toPlayerID, message } = data;
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = `私密 - ${fromPlayerID} 對 ${toPlayerID}: ${message}`;
-    document.getElementById('private-messages').appendChild(messageDiv);
-  });
-
-  // 接收觀戰者訊息
-  socket.on('spectatorMessage', (data) => {
-    const { spectatorID, message } = data;
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = `觀戰者 ${spectatorID}: ${message}`;
-    document.getElementById('spectator-messages').appendChild(messageDiv);
-  });
-</script>

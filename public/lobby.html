@@ -1,47 +1,88 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大廳</title>
-    <link rel="stylesheet" href="lobby.css">
+  <meta charset="UTF-8">
+  <title>多人對戰遊戲 - 大廳</title>
+  <link rel="stylesheet" href="lobby.css"> <!-- 請將相關 CSS 移到 lobby.css -->
 </head>
 <body>
-    <div class="lobby-container">
-        <h1>遊戲大廳</h1>
+  <h1 id="lobby-title">遊戲大廳</h1>
+  <div id="lobby">
+    <input type="text" id="playerID" placeholder="輸入玩家ID">
+    <button id="confirmPlayerID">確認玩家ID</button>
+    <button id="createRoom" disabled>創建房間</button>
+    <button id="joinRoom" disabled>加入房間</button>
 
-        <!-- 顯示房間列表 -->
-        <div class="room-list">
-            <h2>房間列表</h2>
-            <ul id="room-list">
-                <!-- 房間列表將由 JavaScript 動態生成 -->
-            </ul>
-        </div>
+    <div id="create-room-screen" style="display:none;">
+      <h2>創建房間</h2>
+      <label for="room-mode">房間模式：</label>
+      <select id="room-mode">
+        <option value="invite-only">邀請模式</option>
+        <option value="public">公開模式</option>
+      </select><br>
 
-        <!-- 創建房間按鈕 -->
-        <div class="create-room">
-            <h2>創建遊戲房間</h2>
-            <button id="create-room-btn">創建房間</button>
-        </div>
+      <label for="spectator-setting">觀戰功能：</label>
+      <select id="spectator-setting">
+        <option value="allow">允許觀戰者進入</option>
+        <option value="disallow">禁止觀戰者進入</option>
+      </select><br>
 
-        <!-- 加入房間 -->
-        <div class="join-room">
-            <h2>加入遊戲房間</h2>
-            <input type="text" id="room-id-input" placeholder="輸入房間ID">
-            <button id="join-room-btn">加入房間</button>
-        </div>
-
-        <!-- 公共聊天 -->
-        <div class="chat-container">
-            <h2>公共聊天</h2>
-            <div id="chat-box">
-                <!-- 聊天訊息將顯示在這裡 -->
-            </div>
-            <input type="text" id="chat-input" placeholder="輸入訊息...">
-            <button id="send-chat-btn">發送</button>
-        </div>
+      <button id="create-room-btn">創建房間</button>
     </div>
 
-    <script src="lobby.js"></script>
+    <div id="roomList"></div> <!-- 顯示房間列表 -->
+  </div>
+
+  <div id="icon-selection" style="display:none;">
+    <h2>選擇你的圖示</h2>
+    <button onclick="selectIcon('🐶')">🐶</button>
+    <button onclick="selectIcon('🐱')">🐱</button>
+    <button onclick="selectIcon('🦊')">🦊</button>
+    <button onclick="selectIcon('🐯')">🐯</button>
+    <button onclick="selectIcon('🦁')">🦁</button>
+  <button onclick="selectIcon('🐺')">🐺</button>
+  <button onclick="selectIcon('🐭')">🐭</button>
+  <button onclick="selectIcon('🐹')">🐹</button>
+  <button onclick="selectIcon('🐰')">🐰</button>
+  <button onclick="selectIcon('🐻‍❄️')">🐻‍❄️</button>
+  <button onclick="selectIcon('🐨')">🐨</button>
+  <button onclick="selectIcon('🐔')">🐔</button>
+  <button onclick="selectIcon('🐧')">🐧</button>
+  <button onclick="selectIcon('🦉')">🦉</button>
+  <button onclick="selectIcon('🐸')">🐸</button>
+  <button onclick="selectIcon('🐳')">🐳</button>
+  <button onclick="selectIcon('🦀')">🦀</button>
+  <button onclick="selectIcon('🦞')">🦞</button>
+  <button onclick="selectIcon('🦈')">🦈</button>
+  <button onclick="selectIcon('🐙')">🐙</button>
+  <button onclick="selectIcon('🦭')">🦭</button>
+  <button onclick="selectIcon('🐣')">🐣</button>
+  <button onclick="selectIcon('🪼')">🪼</button>
+  <button onclick="selectIcon('🦖')">🦖</button>
+  <button onclick="selectIcon('🐲')">🐲</button>
+  <button onclick="selectIcon('🦕')">🦕</button>
+  <button onclick="selectIcon('🐞')">🐞</button>
+  <button onclick="selectIcon('🐜')">🐜</button>
+  <button onclick="selectIcon('🐝')">🐝</button>
+  <button onclick="selectIcon('🦗')">🦗</button>
+  <button onclick="selectIcon('☃️')">☃️</button>
+  <button onclick="selectIcon('🌞')">🌞</button>
+  <button onclick="selectIcon('🌟')">🌟</button>
+  <button onclick="selectIcon('🌩️')">🌩️</button>
+  <button onclick="selectIcon('🌈')">🌈</button>
+  <button onclick="selectIcon('🍓')">🍓</button>
+  <button onclick="selectIcon('🍉')">🍉</button>
+  <button onclick="selectIcon('🍎')">🍎</button>
+  <button onclick="selectIcon('🍊')">🍊</button>
+  <button onclick="selectIcon('🍒')">🍒</button>
+  <button onclick="selectIcon('🥝')">🥝</button>
+  <button onclick="selectIcon('🍍')">🍍</button>
+  <button onclick="selectIcon('🍌')">🍌</button>
+  <button onclick="selectIcon('🍇')">🍇</button>
+  <button onclick="selectIcon('🌶️')">🌶️</button>
+    <!-- 其他圖示按鈕 -->
+  </div>
+
+  <script src="lobby.js"></script> <!-- 移到 lobby.js -->
 </body>
 </html>
